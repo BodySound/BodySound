@@ -21,9 +21,12 @@ import android.graphics.*
 import android.os.SystemClock
 import android.util.Log
 import androidx.core.graphics.minus
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
+import com.google.android.material.snackbar.Snackbar
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.examples.poseestimation.data.*
+import org.tensorflow.lite.examples.poseestimation.databinding.ActivityMainBinding
 import org.tensorflow.lite.gpu.GpuDelegate
 import org.tensorflow.lite.support.common.FileUtil
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -58,7 +61,6 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
         // controls size of crop region
 
         // TFLite file names.
-        //private const val LIGHTNING_FILENAME = "movenet_lightning.tflite"
         private const val THUNDER_FILENAME = "movenet_thunder.tflite"
 
         // allow specifying model type.
@@ -84,7 +86,6 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
                     // load model
                     FileUtil.loadMappedFile(
                         context,
-//                        if (modelType == ModelType.Lightning) LIGHTNING_FILENAME
                         THUNDER_FILENAME
                     ), options
                 ),
@@ -193,14 +194,20 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
             cropRegion = determineRectF(keyPoints, bitmap.width, bitmap.height)
         }
 
-        var leftWristPos = keyPoints[BodyPart.LEFT_WRIST.position].coordinate
-        var leftShoulderPos = keyPoints[BodyPart.LEFT_SHOULDER.position].coordinate
-        var rightShoulderPos = keyPoints[BodyPart.RIGHT_SHOULDER.position].coordinate
+        val leftWristPos = keyPoints[BodyPart.LEFT_WRIST.position].coordinate
+        val leftShoulderPos = keyPoints[BodyPart.LEFT_SHOULDER.position].coordinate
+        val rightShoulderPos = keyPoints[BodyPart.RIGHT_SHOULDER.position].coordinate
+        val leftHipPos = keyPoints[BodyPart.LEFT_HIP.position].coordinate
+        val rightHipPos = keyPoints[BodyPart.RIGHT_HIP.position].coordinate
 
-        var shoulderDist = getDistance(leftShoulderPos, rightShoulderPos);
-        var distanceFromShoulder = getDistanceFromShoulder(leftWristPos, leftShoulderPos, rightShoulderPos, shoulderDist);
-        var ratio = distanceFromShoulder / shoulderDist;
-        //Log.d("test", ratio.toString())
+        val middleShoulderPos = PointF((leftShoulderPos.x + rightShoulderPos.x) / 2, (leftShoulderPos.y + rightShoulderPos.y / 2))
+        val middleHipPos = PointF((leftHipPos.x + rightHipPos.x) / 2, (leftHipPos.y + rightHipPos.y / 2))
+
+        val torsoHeight = getDistance(middleShoulderPos, middleHipPos)
+        val leftWristHeight = getDistanceFromShoulder(leftWristPos, leftShoulderPos, rightShoulderPos, torsoHeight)
+        val ratio = leftWristHeight
+        Log.d("test", leftWristPos.y.toString())
+        Log.d("test", ratio.toString())
 
         return Person(
             keyPoints,
@@ -219,16 +226,15 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
     }
 
     private fun getDistance(point1: PointF, point2: PointF): Float {
-        return sqrt((point1.x - point2.x).pow(2) + (point1.y - point2.y).pow(2));
+        return sqrt((point1.x - point2.x).pow(2) + (point1.y - point2.y).pow(2))
     }
 
-    private fun getDistanceFromShoulder(left_wrist_pos: PointF, left_shoulder_pos: PointF,
-                                        right_shoulder_pos: PointF, shoulder_dist: Float): Float {
-        var vec1 = right_shoulder_pos - left_shoulder_pos;
-        var vec2 = left_wrist_pos - left_shoulder_pos;
+    private fun getDistanceFromShoulder(left_wrist_pos: PointF, middleShoulderPos: PointF, middleHipPos: PointF, torsoHeight: Float): Float {
+        val vec1 = middleShoulderPos - middleHipPos
+        val vec2 = left_wrist_pos
 
-        var dotProduct = abs(vec1.x * vec2.x + vec1.y * vec2.y);
-        return dotProduct / shoulder_dist;
+        val dotProduct = abs(vec1.x * vec2.x + vec1.y * vec2.y)
+        return dotProduct / torsoHeight
     }
 
     private fun CCW(var1 :PointF,var2 :PointF,var3 :PointF): Float {
