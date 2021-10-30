@@ -25,7 +25,7 @@ import org.tensorflow.lite.examples.poseestimation.ml.PoseDetector
 import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import org.tensorflow.lite.examples.poseestimation.sound.makeSound
+import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
 
 class CameraSource(
     private val surfaceView: SurfaceView,
@@ -85,8 +85,7 @@ class CameraSource(
 
     private var cameraId: String = ""
 
-    private var MakeSound: makeSound? = makeSound()
-
+    private var makeSound: MakeSound? = MakeSound()
     suspend fun initCamera() {
         camera = openCamera(cameraManager, cameraId)
         /**openCamera()이용 인자는 카메라 아이디, 콜백, 핸들러를 갖는다.
@@ -258,6 +257,7 @@ class CameraSource(
                 /**포즈 classifier 작동중 일 때**/
             }
         }
+
         /**1초마다 fps를 mainactivity로 보냄**/
         /**
         frameProcessedInOneSecondInterval++
@@ -268,7 +268,7 @@ class CameraSource(
          **/
         /**사람의 뼈대를 그리다**/
         person?.let {
-            if (it.score > MIN_CONFIDENCE) MakeSound?.soundPlay(it.ratio,it.rignt_wrist,it.is_in)
+            if (it.score > MIN_CONFIDENCE) makeSound?.soundPlay(it.ratio, it.rignt_wrist, it.is_in)
             visualize(it, bitmap)
         }
     }

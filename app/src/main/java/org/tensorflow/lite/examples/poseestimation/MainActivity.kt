@@ -39,6 +39,7 @@ import org.tensorflow.lite.examples.poseestimation.data.Device
 import org.tensorflow.lite.examples.poseestimation.ml.ModelType
 import org.tensorflow.lite.examples.poseestimation.ml.MoveNet
 //import org.tensorflow.lite.examples.poseestimation.ml.PoseNet
+import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
      * 2 == PoseNet model
      **/
     private var modelPos = 1
-
+    private var makeSound: MakeSound? = MakeSound()
     /** Default device is CPU */
     private var device = Device.CPU
     //---------------각 필요한 컴포넌트들을 mainActivity에서 이용하기 위한 변수들
@@ -101,9 +102,11 @@ class MainActivity : AppCompatActivity() {
         스피너 위젯을 실행합니다.
         (목록중에 하나 고르는거)
          */
+
         if (!isCameraPermissionGranted()) {//카메라 접속 허가 없다
             requestPermission()//권한받기
         }
+
     }
 
     override fun onStart() { // 생명 주기에 대한 코드 : 시작할 때
