@@ -149,39 +149,13 @@ class MakeSound() {
             2.0
         ) + Math.pow((right_wrist.y - Right_Wrist.y).toDouble(), 2.0)
         Log.d("test", ratio.toString())
-        if (distance > 200) {
+        if (distance > 100) {
             Log.d("test", distance.toString())
             setNoteFrequencies(ratio.toDouble())
             if (!playState) makeSound()
-        } else if (distance <= 200 && playState) {
+        } else if (distance <= 100 && playState) {
             stopSound()
         }
         Right_Wrist = right_wrist
     }
 }
-
-
-
-
-
-
-
-
-    /*
-    fun soundPlay(ratio: Float, right_wrist: PointF, is_in_body: Boolean) {
-        var distance = Math.pow(
-            (right_wrist.x - Right_Wrist.x).toDouble(),
-            2.0
-        ) + Math.pow((right_wrist.y - Right_Wrist.y).toDouble(), 2.0)
-        Log.d("test", ratio.toString())
-        if (distance > 200) {
-            Log.d("test", distance.toString())
-            if (!playState) makeSound()
-        } else if (distance <= 200 && playState) {
-            stopSound()
-        }
-        Right_Wrist = right_wrist
-    }
-}
-
-     */
