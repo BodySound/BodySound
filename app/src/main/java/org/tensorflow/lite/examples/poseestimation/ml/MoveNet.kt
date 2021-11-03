@@ -26,7 +26,6 @@ import com.google.android.material.snackbar.Snackbar
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.examples.poseestimation.data.*
-import org.tensorflow.lite.examples.poseestimation.databinding.ActivityMainBinding
 import org.tensorflow.lite.gpu.GpuDelegate
 import org.tensorflow.lite.support.common.FileUtil
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -205,7 +204,8 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
 
         val torsoHeight = getDistance(middleShoulderPos, middleHipPos)
         val leftWristHeight = getDistanceFromShoulder(leftWristPos, middleShoulderPos, middleHipPos, torsoHeight)
-        val ratio = leftWristHeight / torsoHeight
+//        val ratio = leftWristHeight / torsoHeight
+        val ratio = leftWristPos.y / torsoHeight
         Log.d("test", leftWristPos.y.toString())
         Log.d("test", ratio.toString())
 

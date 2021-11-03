@@ -47,6 +47,7 @@ class CameraSource(
     private var detector: PoseDetector? = null // org.tensorflow.lite.examples.poseestimation.ml
     private var yuvConverter: YuvToRgbConverter = YuvToRgbConverter(surfaceView.context) // org.tensorflow.lite.examples.poseestimation
     private lateinit var imageBitmap: Bitmap //
+    private var tictok: Int = 0
     /*
     why late init?
     the bitmap can be later initialized by initcamera()
@@ -267,9 +268,15 @@ class CameraSource(
         }
          **/
         /**사람의 뼈대를 그리다**/
-        person?.let {
-            if (it.score > MIN_CONFIDENCE) makeSound?.soundPlay(it.ratio, it.rignt_wrist, it.is_in)
-            visualize(it, bitmap)
+        if (tictok == 1) {
+            person?.let {
+                if (it.score > MIN_CONFIDENCE) makeSound?.soundPlay(it.ratio, it.rignt_wrist, it.is_in)
+                visualize(it, bitmap)
+            }
+            tictok = 0;
+        }
+        else {
+            tictok = 1;
         }
     }
 
@@ -312,6 +319,7 @@ class CameraSource(
             )
             surfaceView.holder.unlockCanvasAndPost(canvas)
         }
+
     }
 
     private fun stopImageReaderThread() {
