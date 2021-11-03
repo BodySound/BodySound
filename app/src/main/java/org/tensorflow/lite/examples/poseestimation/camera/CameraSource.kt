@@ -273,10 +273,11 @@ class CameraSource(
                 if (it.score > MIN_CONFIDENCE) makeSound?.soundPlay(it.ratio, it.rignt_wrist, it.is_in)
                 tictok = 0;
             }
-            visualize(it, bitmap)
             else {
                 tictok = 1;
             }
+            //makeSound?.soundPlay(it.ratio, it.rignt_wrist, it.is_in)
+            visualize(it, bitmap)
         }
     }
 

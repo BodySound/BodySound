@@ -18,6 +18,7 @@ class MakeSound() {
     private val sampleRate = 22050//44100 //샘플링 정도 혹시 너무 버벅거리면 샘플링 줄이기
 
     private var ratio: Float = 0.0F
+    private var PI_ratio: Int = 0
     private var Right_Wrist: PointF = PointF(0.0F, 0.0F)
     private var is_in_body: Boolean = false
     private var playState = false //재생중:true, 정지:false
@@ -141,47 +142,25 @@ class MakeSound() {
     }
 
     fun soundPlay(ratio: Float, right_wrist: PointF, is_in_body: Boolean) {
-        //this.ratio = ratio
+
+
+        this.ratio = ratio
         //this.Right_Wrist = right_wrist
         //this.is_in_body = is_in_body
         var distance = Math.pow(
             (right_wrist.x - Right_Wrist.x).toDouble(),
             2.0
         ) + Math.pow((right_wrist.y - Right_Wrist.y).toDouble(), 2.0)
-        Log.d("test", ratio.toString())
-        if (distance > 200) {
-            Log.d("test", distance.toString())
+        if (distance > 100) {
+            /*var I_ratio = (ratio * 50.0f).toInt()
+            if (I_ratio == PI_ratio)
+                return
+            PI_ratio = I_ratio*/
             setNoteFrequencies(ratio.toDouble())
             if (!playState) makeSound()
-        } else if (distance <= 200 && playState) {
+        } else if (distance <= 100 && playState) {
             stopSound()
         }
         Right_Wrist = right_wrist
     }
 }
-
-
-
-
-
-
-
-
-    /*
-    fun soundPlay(ratio: Float, right_wrist: PointF, is_in_body: Boolean) {
-        var distance = Math.pow(
-            (right_wrist.x - Right_Wrist.x).toDouble(),
-            2.0
-        ) + Math.pow((right_wrist.y - Right_Wrist.y).toDouble(), 2.0)
-        Log.d("test", ratio.toString())
-        if (distance > 200) {
-            Log.d("test", distance.toString())
-            if (!playState) makeSound()
-        } else if (distance <= 200 && playState) {
-            stopSound()
-        }
-        Right_Wrist = right_wrist
-    }
-}
-
-     */

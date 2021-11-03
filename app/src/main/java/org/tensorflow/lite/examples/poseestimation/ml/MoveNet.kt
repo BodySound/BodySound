@@ -194,20 +194,10 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
         }
 
         val leftWristPos = keyPoints[BodyPart.LEFT_WRIST.position].coordinate
-        val leftShoulderPos = keyPoints[BodyPart.LEFT_SHOULDER.position].coordinate
-        val rightShoulderPos = keyPoints[BodyPart.RIGHT_SHOULDER.position].coordinate
-        val leftHipPos = keyPoints[BodyPart.LEFT_HIP.position].coordinate
-        val rightHipPos = keyPoints[BodyPart.RIGHT_HIP.position].coordinate
 
-        val middleShoulderPos = PointF((leftShoulderPos.x + rightShoulderPos.x) / 2, (leftShoulderPos.y + rightShoulderPos.y / 2))
-        val middleHipPos = PointF((leftHipPos.x + rightHipPos.x) / 2, (leftHipPos.y + rightHipPos.y / 2))
+        val ratio = ((bitmap.height.toFloat()-leftWristPos.y) / bitmap.height.toFloat()) * 5.0f
 
-        val torsoHeight = getDistance(middleShoulderPos, middleHipPos)
-        val leftWristHeight = getDistanceFromShoulder(leftWristPos, leftShoulderPos, rightShoulderPos, torsoHeight)
-        val ratio = leftWristHeight
-        Log.d("test", leftWristPos.y.toString())
-        Log.d("test", ratio.toString())
-
+        //Log.d("test", bitmap.height.toFloat().toString())
         return Person(
             keyPoints,
             ratio,
@@ -223,19 +213,6 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
 
         // Person에 keyPoints가 있기 때문에 좌표를 쓸수 있을것으로 보임
     }
-
-    private fun getDistance(point1: PointF, point2: PointF): Float {
-        return sqrt((point1.x - point2.x).pow(2) + (point1.y - point2.y).pow(2))
-    }
-
-    private fun getDistanceFromShoulder(left_wrist_pos: PointF, middleShoulderPos: PointF, middleHipPos: PointF, torsoHeight: Float): Float {
-        val vec1 = middleShoulderPos - middleHipPos
-        val vec2 = left_wrist_pos
-
-        val dotProduct = abs(vec1.x * vec2.x + vec1.y * vec2.y)
-        return dotProduct / torsoHeight
-    }
-
     private fun CCW(var1 :PointF,var2 :PointF,var3 :PointF): Float {
         var result = var1.x * var2.y + var2.x * var3.y + var3.x * var1.y
         result -= (var1.y * var2.x + var2.y * var3.x + var3.y * var1.x)
