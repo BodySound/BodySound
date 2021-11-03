@@ -268,15 +268,15 @@ class CameraSource(
         }
          **/
         /**사람의 뼈대를 그리다**/
-        if (tictok == 1) {
-            person?.let {
+        person?.let {
+            if (tictok == 1) {
                 if (it.score > MIN_CONFIDENCE) makeSound?.soundPlay(it.ratio, it.rignt_wrist, it.is_in)
-                visualize(it, bitmap)
+                tictok = 0;
             }
-            tictok = 0;
-        }
-        else {
-            tictok = 1;
+            visualize(it, bitmap)
+            else {
+                tictok = 1;
+            }
         }
     }
 
