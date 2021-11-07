@@ -204,7 +204,7 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
 
         val torsoHeight = getDistance(middleShoulderPos, middleHipPos)
         val leftWristHeight = getDistanceFromShoulder(leftWristPos, leftShoulderPos, rightShoulderPos, torsoHeight)
-        val ratio = leftWristHeight
+        val ratio = leftWristPos.y / torsoHeight
         Log.d("test", leftWristPos.y.toString())
         Log.d("test", ratio.toString())
 
