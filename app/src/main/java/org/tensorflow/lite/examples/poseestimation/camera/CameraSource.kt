@@ -276,6 +276,7 @@ class CameraSource(
             else {
                 tictok = 1;
             }
+            //makeSound?.soundPlay(it.ratio, it.rignt_wrist, it.is_in)
             visualize(it, bitmap)
         }
     }
