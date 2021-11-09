@@ -16,6 +16,7 @@ limitations under the License.
 
 package org.tensorflow.lite.examples.poseestimation
 
+//import org.tensorflow.lite.examples.poseestimation.ml.PoseNet
 import android.Manifest
 import android.app.AlertDialog
 import android.app.Dialog
@@ -23,12 +24,9 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Process
 import android.view.SurfaceView
-import android.view.View
 import android.view.WindowManager
-import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
@@ -38,7 +36,6 @@ import org.tensorflow.lite.examples.poseestimation.camera.CameraSource
 import org.tensorflow.lite.examples.poseestimation.data.Device
 import org.tensorflow.lite.examples.poseestimation.ml.ModelType
 import org.tensorflow.lite.examples.poseestimation.ml.MoveNet
-//import org.tensorflow.lite.examples.poseestimation.ml.PoseNet
 import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
 
 class MainActivity : AppCompatActivity() {

@@ -1,5 +1,6 @@
 package org.tensorflow.lite.examples.poseestimation.camera
 
+//import org.tensorflow.lite.examples.poseestimation.ml.PoseClassifier
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
@@ -13,19 +14,16 @@ import android.hardware.camera2.CameraManager
 import android.media.ImageReader
 import android.os.Handler
 import android.os.HandlerThread
-import android.util.Log
 import android.view.Surface
 import android.view.SurfaceView
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.tensorflow.lite.examples.poseestimation.VisualizationUtils
 import org.tensorflow.lite.examples.poseestimation.YuvToRgbConverter
 import org.tensorflow.lite.examples.poseestimation.data.Person
-//import org.tensorflow.lite.examples.poseestimation.ml.PoseClassifier
 import org.tensorflow.lite.examples.poseestimation.ml.PoseDetector
-import java.util.*
+import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
 
 class CameraSource(
     private val surfaceView: SurfaceView,
@@ -241,6 +239,7 @@ class CameraSource(
         stopImageReaderThread()
         detector?.close()
         detector = null
+        makeSound?.playState = false
         /**
         fpsTimer?.cancel()
         fpsTimer = null
@@ -270,7 +269,7 @@ class CameraSource(
         /**사람의 뼈대를 그리다**/
         person?.let {
             if (tictok == 1) {
-                if (it.score > MIN_CONFIDENCE) makeSound?.soundPlay(it.ratio, it.rignt_wrist, it.is_in)
+                if (it.score > MIN_CONFIDENCE) makeSound?.soundPlay(it.ratio, it.rignt_wrist)
                 tictok = 0;
             }
             else {
