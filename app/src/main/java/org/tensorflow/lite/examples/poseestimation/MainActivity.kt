@@ -103,13 +103,13 @@ class MainActivity : AppCompatActivity() {
         (목록중에 하나 고르는거)
          */
 
-        val record_event = findViewById<ImageButton>(R.id.record_button)
+        val recordEvent = findViewById<ImageButton>(R.id.record_button)
 
         if (!isCameraPermissionGranted()) {//카메라 접속 허가 없다
             requestPermission()//권한받기
         }
 
-        record_event.setOnClickListener {
+        recordEvent.setOnClickListener {
             cameraSource?.startRecord("test.txt")
         }
     }
