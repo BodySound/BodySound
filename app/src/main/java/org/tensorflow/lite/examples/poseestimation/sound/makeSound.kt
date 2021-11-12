@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import java.io.*
+import kotlin.math.cos
 import kotlin.math.sin
 
 class MakeSound() {
@@ -28,31 +29,44 @@ class MakeSound() {
     private var ratio: Float = 0.0F
     private var Right_Wrist: PointF = PointF(0.0F, 0.0F)
     var playState = false //재생중:true, 정지:false
+    var recordPlayState = false
     private var angle: Double = 0.0
     private var audioTrack: AudioTrack? = null
     private var startFrequency = 130.81 // 초기 주파수 값 ==> 시작점
     private var synthFrequency = 130.81 // 시작점으로부터 시작하는 주파수 변화
     private var buffer = ShortArray(minSize)// 버퍼
+    private var recordBuffer = ShortArray(minSize)
     private var player = getAudioTrack() // 소리 재생 클라스 생성
-    private var soundThread: Thread? = null //스레드
+    var soundThread: Thread? = null //스레드
+    var recordPlayThread: Thread? = null
     /*************************************************************** sound thread *******************************/
     @RequiresApi(Build.VERSION_CODES.M)
     var soundGen = Runnable { //버퍼 생성 스레드
         Thread.currentThread().priority = Thread.MIN_PRIORITY
-        if (Thread.interrupted()) {
+        if (Thread.currentThread().isInterrupted) {
             return@Runnable
         }
         else {
             while(playState) {
                 generateTone()
-                if(is_record){
+                if (is_record) {
                     record_CD.add(buffer)
                 }
                 player?.write(buffer, 0, buffer.size, WRITE_BLOCKING)
             }
         }
     }
-
+    var playRecorded = Runnable { //버퍼 생성 스레드
+        Thread.currentThread().priority = Thread.MIN_PRIORITY
+        if (Thread.currentThread().isInterrupted) {
+            return@Runnable
+        }
+        else {
+            while(recordPlayState) {
+                player?.write(recordBuffer, 0, recordBuffer.size, WRITE_BLOCKING)
+            }
+        }
+    }
     /************************************************ start stop sound functions ***********************/
     @RequiresApi(Build.VERSION_CODES.M)
     private fun makeSound() { //소리 재생
@@ -109,7 +123,7 @@ class MakeSound() {
         amplify: Double,
         frequencies: Double
     ): Double { //파형 조절 함수 amplify:진폭 frequencies:주파수
-        return sin(Math.PI * amplify * frequencies)
+        return sin( Math.PI * frequencies)
     }
 
     private fun generateTone() {// 버퍼 생성 함수 array에 집어넣을 값
@@ -172,5 +186,14 @@ class MakeSound() {
         oos.close()
         this.record_num = 0
         this.record_CD.clear()
+    }
+    fun playRecord(Filepath: String){
+        var recordPlayer = getAudioTrack()
+        recordPlayer?.play()
+        recordPlayThread = Thread(playRecorded)
+        val fis = FileInputStream("/"+Filepath)
+        val ois = ObjectInputStream(fis)
+        ois.readObject()
+
     }
 }

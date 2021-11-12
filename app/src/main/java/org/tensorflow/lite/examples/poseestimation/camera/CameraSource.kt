@@ -115,7 +115,7 @@ class CameraSource(
                 // Create rotated version for portrait display
                 /** 이미지를 90도 회전시켜 전달한다. */
                 val rotateMatrix = Matrix()
-                rotateMatrix.postRotate(90.0f)
+                rotateMatrix.postRotate(270.0f)
 
                 val rotatedBitmap = Bitmap.createBitmap(
                     imageBitmap, 0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT,
@@ -296,7 +296,9 @@ class CameraSource(
         if (person.score > MIN_CONFIDENCE) {
             outputBitmap = VisualizationUtils.drawBodyKeypoints(bitmap, person)
         }
-
+        else{
+            makeSound?.playState = false
+        }
         val holder = surfaceView.holder
         val surfaceCanvas = holder.lockCanvas()
         surfaceCanvas?.let { canvas ->
