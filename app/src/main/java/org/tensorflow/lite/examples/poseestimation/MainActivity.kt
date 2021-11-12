@@ -23,8 +23,11 @@ import android.app.Dialog
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Process
+import android.util.Log
 import android.view.SurfaceView
 import android.view.WindowManager
+import android.widget.Button
+import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -100,10 +103,15 @@ class MainActivity : AppCompatActivity() {
         (목록중에 하나 고르는거)
          */
 
+        val record_event = findViewById<ImageButton>(R.id.record_button)
+
         if (!isCameraPermissionGranted()) {//카메라 접속 허가 없다
             requestPermission()//권한받기
         }
 
+        record_event.setOnClickListener {
+            cameraSource?.startRecord("test.txt")
+        }
     }
 
     override fun onStart() { // 생명 주기에 대한 코드 : 시작할 때

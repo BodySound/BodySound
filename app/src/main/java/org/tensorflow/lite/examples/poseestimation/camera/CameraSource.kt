@@ -86,6 +86,8 @@ class CameraSource(
     private var cameraId: String = ""
 
     private var makeSound: MakeSound? = MakeSound()
+
+
     suspend fun initCamera() {
         camera = openCamera(cameraManager, cameraId)
         /**openCamera()이용 인자는 카메라 아이디, 콜백, 핸들러를 갖는다.
@@ -200,6 +202,10 @@ class CameraSource(
             }
             this.detector = detector
         }
+    }
+
+    fun startRecord(Filepath: String) {
+        this.makeSound?.startRecord(Filepath)
     }
 
     /**main activity에서 사용한 세팅 함수
