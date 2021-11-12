@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.ImageFormat
 import android.graphics.Matrix
 import android.graphics.Rect
+import android.hardware.Camera
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraDevice
@@ -172,7 +173,6 @@ class CameraSource(
                 }
             }, imageReaderHandler)
         }
-
     fun prepareCamera() {
         for (cameraId in cameraManager.cameraIdList) {
             /**현재 장치와 연결된모든 카메라에 대하여*/
@@ -224,6 +224,7 @@ class CameraSource(
     )
     }
      **/
+
     fun resume() {
         imageReaderThread = HandlerThread("imageReaderThread").apply { start() }
         imageReaderHandler = Handler(imageReaderThread!!.looper)
@@ -239,6 +240,7 @@ class CameraSource(
         stopImageReaderThread()
         detector?.close()
         detector = null
+        //Thread(makeSound?.soundGen).interrupt()
         makeSound?.playState = false
         /**
         fpsTimer?.cancel()
