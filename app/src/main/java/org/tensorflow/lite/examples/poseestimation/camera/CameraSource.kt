@@ -290,7 +290,9 @@ class CameraSource(
         if (person.score > MIN_CONFIDENCE) {
             outputBitmap = VisualizationUtils.drawBodyKeypoints(bitmap, person)
         }
-
+        else{
+            makeSound?.playState = false
+        }
         val holder = surfaceView.holder
         val surfaceCanvas = holder.lockCanvas()
         surfaceCanvas?.let { canvas ->
