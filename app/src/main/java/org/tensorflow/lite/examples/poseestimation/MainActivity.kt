@@ -109,8 +109,20 @@ class MainActivity : AppCompatActivity() {
             requestPermission()//권한받기
         }
 
+        var record = 0
+
         recordEvent.setOnClickListener {
-            cameraSource?.startRecord("test.txt")
+            val path = getExternalFilesDir(null)
+            // external 저장소
+
+            if (record == 0) {
+                cameraSource?.startRecord(path)
+                record = 1
+            }
+            else {
+                cameraSource?.stopRecord()
+                record = 0
+            }
         }
     }
 
