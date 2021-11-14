@@ -22,7 +22,8 @@ class MakeSound() {
 
     private var is_record: Boolean = false
     private var File_Path: String = ""
-    private var file = File("./" + File_Path)
+//    private var file = File("./" + File_Path)
+    private var file: File? = null
     private var record_CD = mutableListOf<ShortArray>()
     private var record_num: Int = 0
 
@@ -51,6 +52,7 @@ class MakeSound() {
                 generateTone()
                 if (is_record) {
                     record_CD.add(buffer)
+                    Log.d("test", buffer.toString())
                 }
                 player?.write(buffer, 0, buffer.size, WRITE_BLOCKING)
             }
@@ -177,19 +179,38 @@ class MakeSound() {
         if (!playState) makeSound()
         Right_Wrist = right_wrist
     }
-    fun startRecord(Filepath: String) {
+    fun startRecord(Filepath: File?) {
         //Filepath 중복체크 해야됨
-        this.File_Path = Filepath
+//        this.File_Path = Filepath
+        this.file = Filepath
         this.is_record = true
+        Log.d("test", "start record")
     }
     fun stopRecord() {
         this.is_record = false
-        val fos = FileOutputStream("/"+File_Path)
-        val oos = ObjectOutputStream(fos)
-        for(buf in this.record_CD) {
-            oos.writeObject(buf)
+
+//        val fos = FileOutputStream("/"+File_Path)
+//        val oos = ObjectOutputStream(fos)
+//        for(buf in this.record_CD) {
+//            oos.writeObject(buf)
+//        }
+//        oos.close()
+
+        val letDirectory = File(file, "LET")
+        letDirectory.mkdirs()
+
+        Log.d("test", file.toString())
+
+        val my_file = File(letDirectory, "Records.txt")
+        Log.d("test", "stop record")
+
+        FileOutputStream(my_file).use {
+            for(buf in this.record_CD) {
+                it.write(buf.toString().toByteArray())
+                Log.d("test", buf.toString())
+            }
         }
-        oos.close()
+
         this.record_num = 0
         this.record_CD.clear()
     }

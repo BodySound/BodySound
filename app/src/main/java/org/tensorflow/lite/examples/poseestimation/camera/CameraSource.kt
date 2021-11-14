@@ -23,6 +23,7 @@ import org.tensorflow.lite.examples.poseestimation.YuvToRgbConverter
 import org.tensorflow.lite.examples.poseestimation.data.Person
 import org.tensorflow.lite.examples.poseestimation.ml.PoseDetector
 import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
+import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -204,8 +205,12 @@ class CameraSource(
         }
     }
 
-    fun startRecord(Filepath: String) {
+    fun startRecord(Filepath: File?) {
         this.makeSound?.startRecord(Filepath)
+    }
+
+    fun stopRecord() {
+        this.makeSound?.stopRecord()
     }
 
     /**main activity에서 사용한 세팅 함수
