@@ -63,7 +63,13 @@ class MakeSound() {
         }
         else {
             while(recordPlayState) {
-                player?.write(recordBuffer, 0, recordBuffer.size, WRITE_BLOCKING)
+                for(buf in this.record_CD) {
+                    if(recordPlayState == true)
+                        player?.write(recordBuffer, 0, recordBuffer.size, WRITE_BLOCKING)
+                    else
+                        return@Runnable
+                }
+                return@Runnable
             }
         }
     }
