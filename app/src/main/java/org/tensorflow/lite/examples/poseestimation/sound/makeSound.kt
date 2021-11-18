@@ -217,12 +217,15 @@ class MakeSound() {
         */
         this.record_CD.clear()
     }
-    fun playRecord(Filepath: String){
-        var recordPlayer = getAudioTrack()
+    fun playRecord(/*Filepath: String*/): MutableList<ShortArray> {
+        /*var recordPlayer = getAudioTrack()
         recordPlayer?.play()
-        recordPlayThread = Thread(playRecorded)
+        recordPlayThread = Thread(playRecorded)*/
         val fis = FileInputStream(File_Path + "/test.bin")
         val ois = ObjectInputStream(fis)
-        ois.readObject()
+        var play_CD = mutableListOf<ShortArray>()
+        while( ois.available()  > 0)
+            play_CD.add(ois.readObject() as ShortArray)
+        return play_CD
     }
 }
