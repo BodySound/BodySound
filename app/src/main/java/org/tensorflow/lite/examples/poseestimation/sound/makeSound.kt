@@ -51,8 +51,7 @@ class MakeSound() {
             while(playState) {
                 generateTone()
                 if (is_record) {
-                    record_CD.add(buffer)
-                    Log.d("test", buffer.toString())
+                    this.record_CD.add(buffer)
                 }
                 player?.write(buffer, 0, buffer.size, WRITE_BLOCKING)
             }
@@ -199,15 +198,16 @@ class MakeSound() {
         val letDirectory = File(file, "LET")
         letDirectory.mkdirs()
 
-        Log.d("test", file.toString())
-
         val my_file = File(letDirectory, "Records.txt")
         Log.d("test", "stop record")
 
         FileOutputStream(my_file).use {
             for(buf in this.record_CD) {
                 it.write(buf.toString().toByteArray())
-                Log.d("test", buf.toString())
+//                for(tone in buf) {
+////                    Log.d("test", tone.toInt().toString())
+//                    it.write(tone.toInt().toString().toByteArray())
+//                }
             }
         }
 

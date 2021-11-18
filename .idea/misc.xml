@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Documents/Github/BodySound2/app/src/main/res/drawable/rounded_edge.xml" value="0.18518518518518517" />
         <entry key="..\:/Documents/Github/BodySound2/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/Users/dirgs/AndroidStudioProjects/TFLite_Pose_Estimation/app/src/main/res/layout/activity_main.xml" value="0.2046875" />
         <entry key="..\:/Users/dirgs/AndroidStudioProjects/TFLite_Pose_Estimation/app/src/main/res/layout/bottom_sheet_layout.xml" value="0.2046875" />
