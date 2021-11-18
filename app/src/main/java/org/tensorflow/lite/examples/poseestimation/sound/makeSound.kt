@@ -25,7 +25,6 @@ class MakeSound() {
 //    private var file = File("./" + File_Path)
     private var file: File? = null
     private var record_CD = mutableListOf<ShortArray>()
-    private var record_num: Int = 0
 
     private var ratio: Float = 0.0F
     private var Right_Wrist: PointF = PointF(0.0F, 0.0F)
@@ -51,8 +50,7 @@ class MakeSound() {
             while(playState) {
                 generateTone()
                 if (is_record) {
-                    record_CD.add(buffer)
-                    Log.d("test", buffer.toString())
+                    this.record_CD.add(buffer)
                 }
                 player?.write(buffer, 0, buffer.size, WRITE_BLOCKING)
             }
@@ -185,42 +183,46 @@ class MakeSound() {
         this.file = Filepath
         this.is_record = true
         Log.d("test", "start record")
+        Log.d("test", Filepath.toString())
+        File_Path = Filepath.toString()
     }
     fun stopRecord() {
         this.is_record = false
 
-//        val fos = FileOutputStream("/"+File_Path)
-//        val oos = ObjectOutputStream(fos)
-//        for(buf in this.record_CD) {
-//            oos.writeObject(buf)
-//        }
-//        oos.close()
+        Log.d("test", File_Path)
+        print(File_Path)
+        val fos = FileOutputStream(File_Path + "/test.bin")
+        val oos = ObjectOutputStream(fos)
+        for(buf in this.record_CD) {
+            //Log.d("test",buf.toString())
+            oos.writeObject(buf)
+        }
+        oos.close()
 
         val letDirectory = File(file, "LET")
         letDirectory.mkdirs()
 
-        Log.d("test", file.toString())
-
         val my_file = File(letDirectory, "Records.txt")
         Log.d("test", "stop record")
-
+        /*
         FileOutputStream(my_file).use {
             for(buf in this.record_CD) {
                 it.write(buf.toString().toByteArray())
-                Log.d("test", buf.toString())
+//                for(tone in buf) {
+////                    Log.d("test", tone.toInt().toString())
+//                    it.write(tone.toInt().toString().toByteArray())
+//                }
             }
         }
-
-        this.record_num = 0
+        */
         this.record_CD.clear()
     }
     fun playRecord(Filepath: String){
         var recordPlayer = getAudioTrack()
         recordPlayer?.play()
         recordPlayThread = Thread(playRecorded)
-        val fis = FileInputStream("/"+Filepath)
+        val fis = FileInputStream(File_Path + "/test.bin")
         val ois = ObjectInputStream(fis)
         ois.readObject()
-
     }
 }
