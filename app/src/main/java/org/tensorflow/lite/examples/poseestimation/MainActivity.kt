@@ -20,6 +20,7 @@ package org.tensorflow.lite.examples.poseestimation
 import android.Manifest
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Process
@@ -28,6 +29,7 @@ import android.view.SurfaceView
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.PopupWindow
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -117,10 +119,14 @@ class MainActivity : AppCompatActivity() {
 
             if (record == 0) {
                 cameraSource?.startRecord(path)
+                recordEvent.setImageResource(R.drawable.record_stop)
                 record = 1
             }
             else {
-                cameraSource?.stopRecord()
+//                val intent = Intent(this, SaveRecord::class.java)
+//                startActivity(intent)
+                cameraSource?.stopRecord("test5")
+                recordEvent.setImageResource(R.drawable.recording)
                 record = 0
             }
         }

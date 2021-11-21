@@ -4,8 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Documents/Github/BodySound2/app/src/main/res/drawable/rounded_edge.xml" value="0.18518518518518517" />
-        <entry key="..\:/Documents/Github/BodySound2/app/src/main/res/layout/activity_main.xml" value="0.22" />
-        <entry key="..\:/Users/dirgs/AndroidStudioProjects/BodySoundss/app/src/main/res/layout/activity_main.xml" value="0.36614583333333334" />
+        <entry key="..\:/Documents/Github/BodySound2/app/src/main/res/layout/activity_main.xml" value="0.18" />
+        <entry key="..\:/Documents/Github/BodySound2/app/src/main/res/layout/activity_save_record.xml" value="0.1" />
+        <entry key="..\:/Documents/Github/BodySound2/app/src/main/res/layout/record_save.xml" value="0.1" />
+        <entry key="..\:/Documents/Github/BodySound2/app/src/main/res/menu/record_save.xml" value="0.18385416666666668" />
         <entry key="..\:/Users/dirgs/AndroidStudioProjects/TFLite_Pose_Estimation/app/src/main/res/layout/activity_main.xml" value="0.2046875" />
         <entry key="..\:/Users/dirgs/AndroidStudioProjects/TFLite_Pose_Estimation/app/src/main/res/layout/bottom_sheet_layout.xml" value="0.2046875" />
         <entry key="..\:/Users/ilove/AndroidStudioProjects/pose_estimation/lite/examples/pose_estimation/android/app/src/main/res/layout/activity_main.xml" value="0.25" />

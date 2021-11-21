@@ -29,7 +29,7 @@ class MakeSound() {
     private var ratio: Float = 0.0F
     private var Right_Wrist: PointF = PointF(0.0F, 0.0F)
     var playState = false //재생중:true, 정지:false
-    var recordPlayState = false
+    var recordPlayState = true
     private var angle: Double = 0.0
     private var audioTrack: AudioTrack? = null
     private var startFrequency = 130.81 // 초기 주파수 값 ==> 시작점
@@ -62,10 +62,14 @@ class MakeSound() {
             return@Runnable
         }
         else {
+            generateToneB()
             while(recordPlayState) {
-                for(buf in this.record_CD) {
-                    if(recordPlayState == true)
+                /* for(buf in this.record_CD) { */
+                while(true) {
+                    if(recordPlayState == true) {
+                        Log.d("test", "playing")
                         player?.write(recordBuffer, 0, recordBuffer.size, WRITE_BLOCKING)
+                    }
                     else
                         return@Runnable
                 }
@@ -140,6 +144,16 @@ class MakeSound() {
             angle += angularFrequency
         }
     }
+
+    private fun generateToneB() {// 버퍼 생성 함수 array에 집어넣을 값
+        for (i in recordBuffer.indices) {
+            val angularFrequency: Double =
+                130.81 * (Math.PI) / sampleRate
+            recordBuffer[i] = (Short.MAX_VALUE * oscillator(1.5, angle).toFloat()).toInt().toShort()
+            angle += angularFrequency
+        }
+    }
+
     /************************************************ initializing audiotrack *****************************/
     private fun getAudioTrack(): AudioTrack? {// 오디오 트랙 빌더 => 오디오 트랙 생성
         if (audioTrack == null) audioTrack = Builder().setTransferMode(MODE_STREAM)
@@ -156,6 +170,7 @@ class MakeSound() {
     }
 
     fun soundPlay(ratio: Float, right_wrist: PointF) {
+
         this.ratio = 0.0f
         //this.Right_Wrist = right_wrist
         //this.is_in_body = is_in_body
@@ -186,35 +201,16 @@ class MakeSound() {
         Log.d("test", Filepath.toString())
         File_Path = Filepath.toString()
     }
-    fun stopRecord() {
+    fun stopRecord(file_name: String) {
         this.is_record = false
-
-        Log.d("test", File_Path)
-        print(File_Path)
-        val fos = FileOutputStream(File_Path + "/test.bin")
+        Log.d("test", file_name)
+        val fos = FileOutputStream("$File_Path/$file_name.bin")
         val oos = ObjectOutputStream(fos)
         for(buf in this.record_CD) {
-            //Log.d("test",buf.toString())
             oos.writeObject(buf)
         }
         oos.close()
 
-        val letDirectory = File(file, "LET")
-        letDirectory.mkdirs()
-
-        val my_file = File(letDirectory, "Records.txt")
-        Log.d("test", "stop record")
-        /*
-        FileOutputStream(my_file).use {
-            for(buf in this.record_CD) {
-                it.write(buf.toString().toByteArray())
-//                for(tone in buf) {
-////                    Log.d("test", tone.toInt().toString())
-//                    it.write(tone.toInt().toString().toByteArray())
-//                }
-            }
-        }
-        */
         this.record_CD.clear()
     }
     fun playRecord(/*Filepath: String*/): MutableList<ShortArray> {
