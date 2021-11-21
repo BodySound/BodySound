@@ -186,35 +186,17 @@ class MakeSound() {
         Log.d("test", Filepath.toString())
         File_Path = Filepath.toString()
     }
-    fun stopRecord() {
+    fun stopRecord(file_name: String) {
         this.is_record = false
 
-        Log.d("test", File_Path)
-        print(File_Path)
-        val fos = FileOutputStream(File_Path + "/test.bin")
+        Log.d("test", file_name)
+        val fos = FileOutputStream("$File_Path/$file_name.bin")
         val oos = ObjectOutputStream(fos)
         for(buf in this.record_CD) {
-            //Log.d("test",buf.toString())
             oos.writeObject(buf)
         }
         oos.close()
 
-        val letDirectory = File(file, "LET")
-        letDirectory.mkdirs()
-
-        val my_file = File(letDirectory, "Records.txt")
-        Log.d("test", "stop record")
-        /*
-        FileOutputStream(my_file).use {
-            for(buf in this.record_CD) {
-                it.write(buf.toString().toByteArray())
-//                for(tone in buf) {
-////                    Log.d("test", tone.toInt().toString())
-//                    it.write(tone.toInt().toString().toByteArray())
-//                }
-            }
-        }
-        */
         this.record_CD.clear()
     }
     fun playRecord(/*Filepath: String*/): MutableList<ShortArray> {

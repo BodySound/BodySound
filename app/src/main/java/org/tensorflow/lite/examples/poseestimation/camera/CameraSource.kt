@@ -209,8 +209,8 @@ class CameraSource(
         this.makeSound?.startRecord(Filepath)
     }
 
-    fun stopRecord() {
-        this.makeSound?.stopRecord()
+    fun stopRecord(file_name: String) {
+        this.makeSound?.stopRecord(file_name)
     }
 
     /**main activity에서 사용한 세팅 함수
