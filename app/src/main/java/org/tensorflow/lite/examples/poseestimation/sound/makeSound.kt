@@ -19,24 +19,24 @@ class MakeSound() {
         AudioFormat.CHANNEL_OUT_STEREO,
         AudioFormat.ENCODING_PCM_16BIT
     )
-
     private var is_record: Boolean = false
     private var File_Path: String = ""
-//    private var file = File("./" + File_Path)
+//  private var file = File("./" + File_Path)
     private var file: File? = null
     private var record_CD = mutableListOf<ShortArray>()
-
     private var ratio: Float = 0.0F
     private var Right_Wrist: PointF = PointF(0.0F, 0.0F)
     var playState = false //재생중:true, 정지:false
     var recordPlayState = true
     private var angle: Double = 0.0
     private var audioTrack: AudioTrack? = null
+    private var recordTrack: AudioTrack? = null
     private var startFrequency = 130.81 // 초기 주파수 값 ==> 시작점
     private var synthFrequency = 130.81 // 시작점으로부터 시작하는 주파수 변화
     private var buffer = ShortArray(minSize)// 버퍼
     private var recordBuffer = ShortArray(minSize)
     private var player = getAudioTrack() // 소리 재생 클라스 생성
+    private var recordPlayer = getRecordTrack()
     var soundThread: Thread? = null //스레드
     var recordPlayThread: Thread? = null
     /*************************************************************** sound thread *******************************/
@@ -56,19 +56,20 @@ class MakeSound() {
             }
         }
     }
+
     var playRecorded = Runnable { //버퍼 생성 스레드
         Thread.currentThread().priority = Thread.MIN_PRIORITY
         if (Thread.currentThread().isInterrupted) {
             return@Runnable
         }
         else {
-            generateToneB()
             while(recordPlayState) {
                 /* for(buf in this.record_CD) { */
                 while(true) {
                     if(recordPlayState == true) {
-                        Log.d("test", "playing")
-                        player?.write(recordBuffer, 0, recordBuffer.size, WRITE_BLOCKING)
+                        generateToneB()
+                        Log.d("test", recordPlayer.toString())
+                        recordPlayer?.write(recordBuffer, 0, recordBuffer.size, WRITE_BLOCKING)
                     }
                     else
                         return@Runnable
@@ -136,15 +137,6 @@ class MakeSound() {
         return sin( Math.PI * frequencies)
     }
 
-    private fun generateTone() {// 버퍼 생성 함수 array에 집어넣을 값
-        for (i in buffer.indices) {
-            val angularFrequency: Double =
-                synthFrequency * (Math.PI) / sampleRate
-            buffer[i] = (Short.MAX_VALUE * oscillator(1.5, angle).toFloat()).toInt().toShort()
-            angle += angularFrequency
-        }
-    }
-
     private fun generateToneB() {// 버퍼 생성 함수 array에 집어넣을 값
         for (i in recordBuffer.indices) {
             val angularFrequency: Double =
@@ -153,7 +145,14 @@ class MakeSound() {
             angle += angularFrequency
         }
     }
-
+    private fun generateTone() {// 버퍼 생성 함수 array에 집어넣을 값
+        for (i in buffer.indices) {
+            val angularFrequency: Double =
+                synthFrequency * (Math.PI) / sampleRate
+            buffer[i] = (Short.MAX_VALUE * oscillator(1.5, angle).toFloat()).toInt().toShort()
+            angle += angularFrequency
+        }
+    }
     /************************************************ initializing audiotrack *****************************/
     private fun getAudioTrack(): AudioTrack? {// 오디오 트랙 빌더 => 오디오 트랙 생성
         if (audioTrack == null) audioTrack = Builder().setTransferMode(MODE_STREAM)
@@ -169,8 +168,21 @@ class MakeSound() {
         return audioTrack
     }
 
-    fun soundPlay(ratio: Float, right_wrist: PointF) {
+    private fun getRecordTrack(): AudioTrack? {// 오디오 트랙 빌더 => 오디오 트랙 생성
+        if (recordTrack == null) recordTrack = Builder().setTransferMode(MODE_STREAM)
+            .setAudioFormat(
+                AudioFormat.Builder()
+                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                    .setSampleRate(sampleRate)
+                    .setChannelMask(AudioFormat.CHANNEL_OUT_STEREO)
+                    .build()
+            )
+            .setBufferSizeInBytes(minSize)
+            .build()
+        return recordTrack
+    }
 
+    fun soundPlay(ratio: Float, right_wrist: PointF) {
         this.ratio = 0.0f
         //this.Right_Wrist = right_wrist
         //this.is_in_body = is_in_body
@@ -203,6 +215,7 @@ class MakeSound() {
     }
     fun stopRecord(file_name: String) {
         this.is_record = false
+
         Log.d("test", file_name)
         val fos = FileOutputStream("$File_Path/$file_name.bin")
         val oos = ObjectOutputStream(fos)

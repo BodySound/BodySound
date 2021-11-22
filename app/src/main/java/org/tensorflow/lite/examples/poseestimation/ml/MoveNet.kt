@@ -195,7 +195,7 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
 
         val leftWristPos = keyPoints[BodyPart.LEFT_WRIST.position].coordinate
 
-        val ratio = ((bitmap.height.toFloat()-leftWristPos.y) / bitmap.height.toFloat()) * 5.0f
+        val ratio = ((bitmap.height.toFloat()-leftWristPos.y) / bitmap.height.toFloat()) * 8.0f
 
         //Log.d("test", bitmap.height.toFloat().toString())
         return Person(
