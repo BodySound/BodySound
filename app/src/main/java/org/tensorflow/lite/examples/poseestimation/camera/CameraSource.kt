@@ -237,8 +237,8 @@ class CameraSource(
      **/
 
     fun resume() {
-        var soundThread: Thread? = Thread(makeSound?.playRecorded)
-        soundThread!!.start()
+        makeSound?.recordPlayThread = Thread(makeSound?.playRecorded)
+        makeSound?.recordPlayThread!!.start()
         imageReaderThread = HandlerThread("imageReaderThread").apply { start() }
         imageReaderHandler = Handler(imageReaderThread!!.looper)
     }
@@ -253,8 +253,8 @@ class CameraSource(
         stopImageReaderThread()
         detector?.close()
         detector = null
-        //Thread(makeSound?.soundGen).interrupt()
         makeSound?.playState = false
+        makeSound?.recordPlayState =false
         /**
         fpsTimer?.cancel()
         fpsTimer = null
