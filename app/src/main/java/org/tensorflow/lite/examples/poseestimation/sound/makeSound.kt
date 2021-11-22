@@ -29,7 +29,7 @@ class MakeSound() {
     private var ratio: Float = 0.0F
     private var Right_Wrist: PointF = PointF(0.0F, 0.0F)
     var playState = false //재생중:true, 정지:false
-    var recordPlayState = true
+    var recordPlayState = false
     private var angle: Double = 0.0
     private var audioTrack: AudioTrack? = null
     private var startFrequency = 130.81 // 초기 주파수 값 ==> 시작점
@@ -37,6 +37,7 @@ class MakeSound() {
     private var buffer = ShortArray(minSize)// 버퍼
     private var recordBuffer = ShortArray(minSize)
     private var player = getAudioTrack() // 소리 재생 클라스 생성
+    private var recordPlayer = getAudioTrack()
     var soundThread: Thread? = null //스레드
     var recordPlayThread: Thread? = null
     /*************************************************************** sound thread *******************************/
@@ -56,6 +57,7 @@ class MakeSound() {
             }
         }
     }
+
     var playRecorded = Runnable { //버퍼 생성 스레드
         Thread.currentThread().priority = Thread.MIN_PRIORITY
         if (Thread.currentThread().isInterrupted) {
@@ -68,13 +70,21 @@ class MakeSound() {
                 while(true) {
                     if(recordPlayState == true) {
                         Log.d("test", "playing")
-                        player?.write(recordBuffer, 0, recordBuffer.size, WRITE_BLOCKING)
+                        recordPlayer?.write(recordBuffer, 0, recordBuffer.size, WRITE_BLOCKING)
                     }
                     else
                         return@Runnable
                 }
                 return@Runnable
             }
+        }
+    }
+    private fun generateToneB() {// 버퍼 생성 함수 array에 집어넣을 값
+        for (i in recordBuffer.indices) {
+            val angularFrequency: Double =
+                130.81 * (Math.PI) / sampleRate
+            recordBuffer[i] = (Short.MAX_VALUE * oscillator(1.5, angle).toFloat()).toInt().toShort()
+            angle += angularFrequency
         }
     }
     /************************************************ start stop sound functions ***********************/
@@ -144,16 +154,6 @@ class MakeSound() {
             angle += angularFrequency
         }
     }
-
-    private fun generateToneB() {// 버퍼 생성 함수 array에 집어넣을 값
-        for (i in recordBuffer.indices) {
-            val angularFrequency: Double =
-                130.81 * (Math.PI) / sampleRate
-            recordBuffer[i] = (Short.MAX_VALUE * oscillator(1.5, angle).toFloat()).toInt().toShort()
-            angle += angularFrequency
-        }
-    }
-
     /************************************************ initializing audiotrack *****************************/
     private fun getAudioTrack(): AudioTrack? {// 오디오 트랙 빌더 => 오디오 트랙 생성
         if (audioTrack == null) audioTrack = Builder().setTransferMode(MODE_STREAM)
@@ -170,7 +170,6 @@ class MakeSound() {
     }
 
     fun soundPlay(ratio: Float, right_wrist: PointF) {
-
         this.ratio = 0.0f
         //this.Right_Wrist = right_wrist
         //this.is_in_body = is_in_body
@@ -203,6 +202,7 @@ class MakeSound() {
     }
     fun stopRecord(file_name: String) {
         this.is_record = false
+
         Log.d("test", file_name)
         val fos = FileOutputStream("$File_Path/$file_name.bin")
         val oos = ObjectOutputStream(fos)
