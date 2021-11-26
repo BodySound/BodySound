@@ -84,4 +84,4 @@ AudioFormat
  -> <https://developer.android.com/reference/kotlin/android/media/AudioFormat>
 
 ### 5. 요구사항 분석
- -> [**Documents**]https://github.com/BodySound/BodySound/tree/master/%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD%EB%B6%84%EC%84%9D
+ -> [**Documents**](https://github.com/BodySound/BodySound/tree/master/%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD%EB%B6%84%EC%84%9D)
