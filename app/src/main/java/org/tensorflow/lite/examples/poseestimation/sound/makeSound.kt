@@ -30,7 +30,7 @@ class MakeSound() {
     private var ratio: Float = 0.0F
     private var Right_Wrist: PointF = PointF(0.0F, 0.0F)
     var playState = false //재생중:true, 정지:false
-    var recordPlayState = true
+    var recordPlayState = false
     private var angle: Double = 0.0
     private var recordAngle: Double = 0.0
     private var audioTrack: AudioTrack? = null
@@ -55,6 +55,7 @@ class MakeSound() {
             while(playState) {
                 generateTone()
                 if (is_record) {
+                    Log.d("test", "is recording")
                     this.record_CD.add(buffer)
                 }
                 player?.write(buffer, 0, buffer.size, WRITE_BLOCKING)
@@ -67,18 +68,21 @@ class MakeSound() {
             return@Runnable
         }
         else {
-            var recordBuffer = mutableListOf<ShortArray>()
-            recordBuffer = playRecord()
-            recordPlayer?.play()
-            while(recordPlayState) {
-                if(recordPlayState == true) {
-                    for(buf in recordBuffer)
-                        recordPlayer?.write(buf, 0, buf.size, WRITE_BLOCKING)
+            while(true) {
+                if (recordPlayState == true) {
+                    var recordBuffer = playRecord()
+                    recordPlayer?.play()
+                    //Log.d("test", "start recordplay")
+                    for (buf in recordBuffer) {
+                         recordPlayer?.write(buf, 0, buf.size, WRITE_BLOCKING)
+                    }
+                    return@Runnable
                 }
                 else {
                     recordPlayer?.stop()
                     return@Runnable
                 }
+
             }
         }
     }
@@ -175,6 +179,7 @@ class MakeSound() {
             .build()
         return recordAudioTrack
     }
+
     private fun createRunnable() :Runnable{
         var initRunnable = Runnable {
             if (Thread.currentThread().isInterrupted) {
@@ -185,8 +190,10 @@ class MakeSound() {
                 recordPlayer?.play()
                 while (recordPlayState) {
                     if (recordPlayState == true) {
-                        for (buf in recordBuffer)
+                        for (buf in recordBuffer) {
+                            Log.d("test", "start recordplay")
                             recordPlayer?.write(buf, 0, buf.size, WRITE_BLOCKING)
+                        }
                     } else {
                         recordPlayer?.stop()
                         return@Runnable
@@ -244,11 +251,21 @@ class MakeSound() {
         /*var recordPlayer = getAudioTrack()
         recordPlayer?.play()
         recordPlayThread = Thread(playRecorded)*/
-        val fis = FileInputStream(File_Path + "/test.bin")
+        val fis = FileInputStream(File_Path + "/test5.bin")
         val ois = ObjectInputStream(fis)
         var play_CD = mutableListOf<ShortArray>()
-        while( ois.available()  > 0)
-            play_CD.add(ois.readObject() as ShortArray)
-        return play_CD
+        var buff :ShortArray
+
+        while(true) {
+            buff = (ois.readObject() as ShortArray)
+            if(buff == null){
+                ois.close()
+                return play_CD
+            }
+            else{
+                play_CD.add(buff)
+            }
+            Log.d("test5", play_CD.toString())
+        }
     }
 }
