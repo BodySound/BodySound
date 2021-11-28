@@ -212,7 +212,11 @@ class CameraSource(
     fun stopRecord(file_name: String) {
         this.makeSound?.stopRecord(file_name)
     }
-
+    fun playRecords(){
+        makeSound?.recordPlayThread = Thread(makeSound?.playRecorded)
+        makeSound?.recordPlayThread!!.start()
+        this.makeSound?.recordPlayState = true
+    }
     /**main activity에서 사용한 세팅 함수
      * 분류기 직접 설정
      * **/
@@ -237,8 +241,7 @@ class CameraSource(
      **/
 
     fun resume() {
-        var soundThread: Thread? = Thread(makeSound?.playRecorded)
-        soundThread!!.start()
+
         imageReaderThread = HandlerThread("imageReaderThread").apply { start() }
         imageReaderHandler = Handler(imageReaderThread!!.looper)
     }
@@ -253,8 +256,8 @@ class CameraSource(
         stopImageReaderThread()
         detector?.close()
         detector = null
-        //Thread(makeSound?.soundGen).interrupt()
         makeSound?.playState = false
+        makeSound?.recordPlayState =false
         /**
         fpsTimer?.cancel()
         fpsTimer = null

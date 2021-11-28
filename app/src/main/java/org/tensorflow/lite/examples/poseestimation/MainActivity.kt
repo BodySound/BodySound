@@ -126,6 +126,7 @@ class MainActivity : AppCompatActivity() {
 //                val intent = Intent(this, SaveRecord::class.java)
 //                startActivity(intent)
                 cameraSource?.stopRecord("test5")
+                cameraSource?.playRecords()
                 recordEvent.setImageResource(R.drawable.recording)
                 record = 0
             }
