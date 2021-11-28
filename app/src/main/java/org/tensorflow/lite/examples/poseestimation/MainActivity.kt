@@ -20,19 +20,23 @@ package org.tensorflow.lite.examples.poseestimation
 import android.Manifest
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Process
+import android.transition.Slide
+import android.transition.TransitionManager
 import android.util.Log
-import android.view.SurfaceView
-import android.view.WindowManager
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.PopupWindow
+import android.view.*
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
@@ -123,10 +127,52 @@ class MainActivity : AppCompatActivity() {
                 record = 1
             }
             else {
-//                val intent = Intent(this, SaveRecord::class.java)
-//                startActivity(intent)
+                // Initialize a new layout inflater instance
+                val inflater: LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+                // Inflate a custom view using layout inflater
+                val view = inflater.inflate(R.layout.another_view,null)
+
+                // Initialize a new instance of popup window
+                val popupWindow = PopupWindow(
+                    view, // Custom view to show in popup window
+                    ConstraintLayout.LayoutParams.MATCH_PARENT, // Width of popup window
+                    ConstraintLayout.LayoutParams.MATCH_PARENT // Window height
+                )
+
+                // Set an elevation for the popup window
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    popupWindow.elevation = 10.0F
+                }
+
+                val buttonPopup = view.findViewById<Button>(R.id.cancelButton)
+
+                // Set a click listener for popup's button widget
+                buttonPopup.setOnClickListener {
+                    // Dismiss the popup window
+                    popupWindow.dismiss()
+                }
+
+                // Finally, show the popup window on app
+                TransitionManager.beginDelayedTransition(findViewById(R.id.coordinatorLayout))
+                popupWindow.showAtLocation(
+                    findViewById(R.id.coordinatorLayout), // Location to display popup window
+                    Gravity.CENTER, // Exact position of layout to display popup
+                    0, // X offset
+                    0 // Y offset
+                )
+
+                // editText focus
+                val editText = view.findViewById<EditText>(R.id.inputFileName)
+
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                editText.requestFocus()
+                editText.postDelayed({
+                    imm.showSoftInput(editText, 0)
+                }, 100)
+
                 cameraSource?.stopRecord("test5")
-                cameraSource?.playRecords()
+//                cameraSource?.playRecords()
                 recordEvent.setImageResource(R.drawable.recording)
                 record = 0
             }

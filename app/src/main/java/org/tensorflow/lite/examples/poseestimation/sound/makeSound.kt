@@ -9,7 +9,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import java.io.*
 import java.util.*
-import kotlin.math.cos
 import kotlin.math.sin
 
 class MakeSound() {
