@@ -72,17 +72,13 @@ class MakeSound() {
                 if (recordPlayState == true) {
                     var recordBuffer = playRecord()
                     recordPlayer?.play()
-                    //Log.d("test", "start recordplay")
+                    Log.d("test6", recordBuffer.toString())
                     for (buf in recordBuffer) {
                          recordPlayer?.write(buf, 0, buf.size, WRITE_BLOCKING)
                     }
-                    return@Runnable
-                }
-                else {
                     recordPlayer?.stop()
                     return@Runnable
                 }
-
             }
         }
     }
@@ -256,6 +252,19 @@ class MakeSound() {
         var play_CD = mutableListOf<ShortArray>()
         var buff :ShortArray
 
+        play_CD.add(ois.readObject() as ShortArray)
+        play_CD.add(ois.readObject() as ShortArray)
+        play_CD.add(ois.readObject() as ShortArray)
+        play_CD.add(ois.readObject() as ShortArray)
+        play_CD.add(ois.readObject() as ShortArray)
+        play_CD.add(ois.readObject() as ShortArray)
+        play_CD.add(ois.readObject() as ShortArray)
+        play_CD.add(ois.readObject() as ShortArray)
+        play_CD.add(ois.readObject() as ShortArray)
+        play_CD.add(ois.readObject() as ShortArray)
+        play_CD.add(ois.readObject() as ShortArray)
+
+        /*
         while(true) {
             buff = (ois.readObject() as ShortArray)
             if(buff == null){
@@ -265,7 +274,9 @@ class MakeSound() {
             else{
                 play_CD.add(buff)
             }
-            Log.d("test5", play_CD.toString())
         }
+         */
+        Log.d("test5", play_CD.toString())
+        return play_CD
     }
 }
