@@ -242,6 +242,7 @@ class MakeSound() {
         for(buf in this.record_CD) {
             oos.writeObject(buf)
         }
+        oos.writeObject(null)
         oos.close()
 
         this.record_CD.clear()
@@ -254,17 +255,15 @@ class MakeSound() {
         val ois = ObjectInputStream(fis)
         var play_CD = mutableListOf<ShortArray>()
         var buff :ShortArray
-
-        while(true) {
-            buff = (ois.readObject() as ShortArray)
-            if(buff == null){
+        try{
+            while(true) {
+                buff = (ois.readObject() as ShortArray)
+                play_CD.add(buff)
+                Log.d("test5", buff.get(0).toString())
+                }
+        } catch(e: NullPointerException) {
                 ois.close()
                 return play_CD
-            }
-            else{
-                play_CD.add(buff)
-            }
-            Log.d("test5", play_CD.toString())
         }
     }
 }

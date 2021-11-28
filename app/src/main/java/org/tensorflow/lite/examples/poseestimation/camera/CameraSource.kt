@@ -213,9 +213,10 @@ class CameraSource(
         this.makeSound?.stopRecord(file_name)
     }
     fun playRecords(){
+        this.makeSound?.recordPlayState = true
         makeSound?.recordPlayThread = Thread(makeSound?.playRecorded)
         makeSound?.recordPlayThread!!.start()
-        this.makeSound?.recordPlayState = true
+
     }
     /**main activity에서 사용한 세팅 함수
      * 분류기 직접 설정
@@ -241,7 +242,6 @@ class CameraSource(
      **/
 
     fun resume() {
-
         imageReaderThread = HandlerThread("imageReaderThread").apply { start() }
         imageReaderHandler = Handler(imageReaderThread!!.looper)
     }
