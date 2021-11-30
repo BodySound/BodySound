@@ -10,6 +10,18 @@ import androidx.annotation.RequiresApi
 import java.io.*
 import java.util.*
 import kotlin.math.sin
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.media.projection.MediaProjectionManager
+import android.os.Bundle
+import android.widget.Button
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 class MakeSound() {
 
@@ -228,6 +240,7 @@ class MakeSound() {
     fun startRecord(Filepath: File?) {
         //Filepath 중복체크 해야됨
 //        this.File_Path = Filepath
+
         this.file = Filepath
         this.is_record = true
         Log.d("test", "start record")

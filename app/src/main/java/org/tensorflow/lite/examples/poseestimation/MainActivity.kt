@@ -18,14 +18,19 @@ package org.tensorflow.lite.examples.poseestimation
 
 //import org.tensorflow.lite.examples.poseestimation.ml.PoseNet
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -43,16 +48,21 @@ import org.tensorflow.lite.examples.poseestimation.ml.ModelType
 import org.tensorflow.lite.examples.poseestimation.ml.MoveNet
 import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
 import android.view.WindowManager
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import org.tensorflow.lite.examples.poseestimation.sound.AudioCaptureService
 
 
 class MainActivity : AppCompatActivity() {
     companion object {
         private const val FRAGMENT_DIALOG = "dialog"
+        private const val RECORD_AUDIO_PERMISSION_REQUEST_CODE = 42
+        private const val MEDIA_PROJECTION_REQUEST_CODE = 13
+        private lateinit var mediaProjectionManager: MediaProjectionManager
     }
 
     /** A [SurfaceView] for camera preview.   */
     private lateinit var surfaceView: SurfaceView // 카메라를 열고 프리뷰(카메라 촬영화면상태) 을 보기 위함
-
     /** Default pose estimation model is 1 (MoveNet Thunder)
      * 0 == MoveNet Lightning model
      * 1 == MoveNet Thunder model
@@ -86,6 +96,8 @@ class MainActivity : AppCompatActivity() {
                     .show(supportFragmentManager, FRAGMENT_DIALOG)
             }
         }
+
+    private lateinit var mediaProjectionManager: MediaProjectionManager
 
     //-------------------------------------------스위치에 리스너 추가
     //------------------------------------------------------------
@@ -122,6 +134,15 @@ class MainActivity : AppCompatActivity() {
             // external 저장소
 
             if (record == 0) {
+                if (!isRecordAudioPermissionGranted()) {
+                    requestRecordAudioPermission()
+                } else {
+                    startMediaProjectionRequest()
+                }
+                Log.d("fucking ","record")
+                openCamera()
+                //cameraSource?.resume()
+
                 cameraSource?.startRecord(path)
                 recordEvent.setImageResource(R.drawable.record_stop)
                 record = 1
@@ -190,27 +211,73 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    fun showSoftKeyboard(view: View) {
-        if (view.requestFocus()) {
-            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            val isShowing = imm.showSoftInput(view, InputMethodManager.SHOW_FORCED)
-            if (!isShowing) window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-        }
+    private fun isRecordAudioPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun requestRecordAudioPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.RECORD_AUDIO),
+            RECORD_AUDIO_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    private fun startMediaProjectionRequest() {
+        // use applicationContext to avoid memory leak on Android 10.
+        mediaProjectionManager =
+            applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        startActivityForResult(
+            mediaProjectionManager.createScreenCaptureIntent(),
+            MEDIA_PROJECTION_REQUEST_CODE
+        )
+    }
+    @SuppressLint("MissingSuperCall", "NewApi")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == MEDIA_PROJECTION_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Toast.makeText(
+                    this,
+                    "MediaProjection permission obtained. Foreground service will be started to capture audio.",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                val audioCaptureIntent = Intent(this, AudioCaptureService::class.java).apply {
+                    action = AudioCaptureService.ACTION_START
+                    putExtra(AudioCaptureService.EXTRA_RESULT_DATA, data!!)
+                }
+                startForegroundService(audioCaptureIntent)
+
+
+                Log.d("stamp" ,"onActivityResult")
+            } else {
+                Toast.makeText(
+                    this, "Request to obtain MediaProjection denied.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
     override fun onStart() { // 생명 주기에 대한 코드 : 시작할 때
+        Log.d("Main","onStart")
         super.onStart()
         openCamera() //카메라 오픈 함수 밑에 있음
     }
 
     override fun onResume() { // 생명 주기에 대한 코드
+        Log.d("Main","onResume")
+        //openCamera()
+        Log.d("test to data size" , cameraSource.toString())
         cameraSource?.resume()
         super.onResume()
     }
 
     override fun onPause() { // 생명 주기에 대한 코드
-        cameraSource?.close()
+        Log.d("Main","onPause")
+        //cameraSource?.close()
         cameraSource = null
         super.onPause()
     }
@@ -304,6 +371,37 @@ class MainActivity : AppCompatActivity() {
             @JvmStatic
             fun newInstance(message: String): ErrorDialog = ErrorDialog().apply {
                 arguments = Bundle().apply { putString(ARG_MESSAGE, message) }
+            }
+        }
+    }
+
+    private fun startCapturing() {
+        if (!isRecordAudioPermissionGranted()) {
+            requestRecordAudioPermission()
+        } else {
+            startMediaProjectionRequest()
+        }
+    }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == RECORD_AUDIO_PERMISSION_REQUEST_CODE) {
+            Log.d("stamp" ,"onRequestPermissionsResult")
+            if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(
+                    this,
+                    "Permissions to capture audio granted. Click the button once again.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    this, "Permissions to capture audio denied.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

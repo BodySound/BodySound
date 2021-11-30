@@ -15,6 +15,7 @@ import android.hardware.camera2.CameraManager
 import android.media.ImageReader
 import android.os.Handler
 import android.os.HandlerThread
+import android.util.Log
 import android.view.Surface
 import android.view.SurfaceView
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -88,7 +89,6 @@ class CameraSource(
 
     private var makeSound: MakeSound? = MakeSound()
 
-
     suspend fun initCamera() {
         camera = openCamera(cameraManager, cameraId)
         /**openCamera()이용 인자는 카메라 아이디, 콜백, 핸들러를 갖는다.
@@ -96,8 +96,6 @@ class CameraSource(
         imageReader =
             ImageReader.newInstance(PREVIEW_WIDTH, PREVIEW_HEIGHT, ImageFormat.YUV_420_888, 3)
         /**set the image's width , height , format &num of image that can be access in one time*/
-
-
         /** 리더에 리스너 추가, 새 이미지를 사용할 수 있으면 리스너 작동 **/
         /**reader == this */
         imageReader?.setOnImageAvailableListener({ reader ->
@@ -117,19 +115,16 @@ class CameraSource(
                 /** 이미지를 90도 회전시켜 전달한다. */
                 val rotateMatrix = Matrix()
                 rotateMatrix.postRotate(270.0f)
-
                 val rotatedBitmap = Bitmap.createBitmap(
                     imageBitmap, 0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT,
                     rotateMatrix, false
                 )
                 /**이미지 처리*/
                 processImage(rotatedBitmap)
-
                 image.close()
                 /**이미지를 close함 -> 접근권한 +1*/
             }
         }, imageReaderHandler)
-
         /**연속적인 미리보기 화면 제공**/
         imageReader?.surface?.let { surface ->
             // surface가 null이 아닐 때 실행됩니다.
@@ -145,6 +140,7 @@ class CameraSource(
             /** 끊임없이 반복 캡쳐 **/
             cameraRequest?.build()?.let {
                 session?.setRepeatingRequest(it, null, null)
+                Log.d("fucking ","video")
             }
         }
     }
@@ -191,7 +187,6 @@ class CameraSource(
             this.cameraId = cameraId
         }
     }
-
     /**main activity에서 사용한 세팅 함수
      * 모델 직접 설정
      * **/
@@ -204,11 +199,9 @@ class CameraSource(
             this.detector = detector
         }
     }
-
     fun startRecord(Filepath: File?) {
         this.makeSound?.startRecord(Filepath)
     }
-
     fun stopRecord(file_name: String) {
         this.makeSound?.stopRecord(file_name)
     }
@@ -216,7 +209,6 @@ class CameraSource(
         this.makeSound?.recordPlayState = true
         makeSound?.recordPlayThread = Thread(makeSound?.playRecorded)
         makeSound?.recordPlayThread!!.start()
-
     }
     /**main activity에서 사용한 세팅 함수
      * 분류기 직접 설정
@@ -242,11 +234,13 @@ class CameraSource(
      **/
 
     fun resume() {
+        Log.d("Camera","resume")
         imageReaderThread = HandlerThread("imageReaderThread").apply { start() }
         imageReaderHandler = Handler(imageReaderThread!!.looper)
     }
     /**종료 함수**/
     fun close() {
+        Log.d("Camera","close")
         session?.close()
         session = null
         camera?.close()
@@ -297,12 +291,9 @@ class CameraSource(
             visualize(it, bitmap)
         }
     }
-
-
     /** 시각화 : 사람의 뼈대를 그리다.**/
     private fun visualize(person: Person, bitmap: Bitmap) {
         var outputBitmap = bitmap
-
         if (person.score > MIN_CONFIDENCE) {
             outputBitmap = VisualizationUtils.drawBodyKeypoints(bitmap, person)
         }
@@ -316,7 +307,6 @@ class CameraSource(
             val screenHeight: Int
             val left: Int
             val top: Int
-
             if (canvas.height > canvas.width) {
                 val ratio = outputBitmap.height.toFloat() / outputBitmap.width
                 screenWidth = canvas.width
@@ -339,10 +329,9 @@ class CameraSource(
             )
             surfaceView.holder.unlockCanvasAndPost(canvas)
         }
-
     }
-
     private fun stopImageReaderThread() {
+        Log.d("Camera","stopImageReaderThread")
         imageReaderThread?.quitSafely()
         try {
             imageReaderThread?.join()
