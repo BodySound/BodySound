@@ -22,6 +22,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
@@ -43,11 +44,14 @@ import org.tensorflow.lite.examples.poseestimation.ml.ModelType
 import org.tensorflow.lite.examples.poseestimation.ml.MoveNet
 import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
 import android.view.WindowManager
+import androidx.core.app.ActivityCompat
 
 
 class MainActivity : AppCompatActivity() {
     companion object {
         private const val FRAGMENT_DIALOG = "dialog"
+        private const val RECORD_AUDIO_PERMISSION_REQUEST_CODE = 42
+        private const val MEDIA_PROJECTION_REQUEST_CODE = 13
     }
 
     /** A [SurfaceView] for camera preview.   */
@@ -87,6 +91,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    private lateinit var mediaProjectionManager: MediaProjectionManager
+
     //-------------------------------------------스위치에 리스너 추가
     //------------------------------------------------------------
 
@@ -122,6 +128,14 @@ class MainActivity : AppCompatActivity() {
             // external 저장소
 
             if (record == 0) {
+                if (!isRecordAudioPermissionGranted()) {
+                    requestRecordAudioPermission()
+                } else {
+                    startMediaProjectionRequest()
+                }
+
+                onResume()
+
                 cameraSource?.startRecord(path)
                 recordEvent.setImageResource(R.drawable.record_stop)
                 record = 1
@@ -191,12 +205,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showSoftKeyboard(view: View) {
-        if (view.requestFocus()) {
-            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            val isShowing = imm.showSoftInput(view, InputMethodManager.SHOW_FORCED)
-            if (!isShowing) window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-        }
+    private fun isRecordAudioPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.RECORD_AUDIO
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestRecordAudioPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.RECORD_AUDIO),
+            RECORD_AUDIO_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    private fun startMediaProjectionRequest() {
+        // use applicationContext to avoid memory leak on Android 10.
+        mediaProjectionManager =
+            applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        startActivityForResult(
+            mediaProjectionManager.createScreenCaptureIntent(),
+            MEDIA_PROJECTION_REQUEST_CODE
+        )
     }
 
     override fun onStart() { // 생명 주기에 대한 코드 : 시작할 때
