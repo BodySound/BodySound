@@ -224,6 +224,7 @@ class MakeSound() {
         if (!playState) makeSound()
         Right_Wrist = right_wrist
     }
+
     fun startRecord(Filepath: File?) {
         //Filepath 중복체크 해야됨
 //        this.File_Path = Filepath
@@ -233,6 +234,7 @@ class MakeSound() {
         Log.d("test", Filepath.toString())
         File_Path = Filepath.toString()
     }
+
     fun stopRecord(file_name: String) {
         this.is_record = false
 

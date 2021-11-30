@@ -43,7 +43,7 @@
         android:id="@+id/view2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/black"
+        android:background="#80000000"
         app:layout_constraintBottom_toTopOf="@+id/bottom_line"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
@@ -51,7 +51,7 @@
         android:id="@+id/bottom_line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/black"
+        android:background="#80000000"
         app:layout_constraintBottom_toTopOf="@id/bottom_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -60,15 +60,51 @@
         android:id="@+id/view3"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/black"
+        android:background="#80000000"
         app:layout_constraintBottom_toTopOf="@+id/view2"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <View
+        android:id="@+id/subline4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#80000000"
+        app:layout_constraintBottom_toTopOf="@+id/view3"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <View
+        android:id="@+id/subline3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#80000000"
+        app:layout_constraintBottom_toTopOf="@+id/view2"
+        app:layout_constraintTop_toBottomOf="@+id/view3"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <View
+        android:id="@+id/subline2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#80000000"
+        app:layout_constraintBottom_toTopOf="@+id/view4"
+        app:layout_constraintTop_toBottomOf="@+id/view2"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <View
+        android:id="@+id/subline1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#80000000"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_line"
+        app:layout_constraintTop_toBottomOf="@+id/view4"
+        tools:layout_editor_absoluteX="0dp" />
 
     <View
         android:id="@+id/view4"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/black"
+        android:background="#80000000"
         app:layout_constraintBottom_toTopOf="@+id/bottom_line"
         app:layout_constraintTop_toBottomOf="@+id/view2" />
 

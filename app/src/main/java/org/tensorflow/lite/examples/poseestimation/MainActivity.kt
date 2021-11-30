@@ -21,14 +21,11 @@ import android.Manifest
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
-import android.transition.Slide
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -36,7 +33,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +42,8 @@ import org.tensorflow.lite.examples.poseestimation.data.Device
 import org.tensorflow.lite.examples.poseestimation.ml.ModelType
 import org.tensorflow.lite.examples.poseestimation.ml.MoveNet
 import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
+import android.view.WindowManager
+
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -62,8 +60,10 @@ class MainActivity : AppCompatActivity() {
      **/
     private var modelPos = 1
     private var makeSound: MakeSound? = MakeSound()
+
     /** Default device is CPU */
     private var device = Device.CPU
+
     //---------------각 필요한 컴포넌트들을 mainActivity에서 이용하기 위한 변수들
     private var cameraSource: CameraSource? = null
     //---------------
@@ -125,33 +125,43 @@ class MainActivity : AppCompatActivity() {
                 cameraSource?.startRecord(path)
                 recordEvent.setImageResource(R.drawable.record_stop)
                 record = 1
-            }
-            else {
+            } else {
                 // Initialize a new layout inflater instance
-                val inflater: LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                val inflater: LayoutInflater =
+                    getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
                 // Inflate a custom view using layout inflater
-                val view = inflater.inflate(R.layout.another_view,null)
+                val view = inflater.inflate(R.layout.popup_view, null)
 
                 // Initialize a new instance of popup window
                 val popupWindow = PopupWindow(
                     view, // Custom view to show in popup window
                     ConstraintLayout.LayoutParams.MATCH_PARENT, // Width of popup window
-                    ConstraintLayout.LayoutParams.MATCH_PARENT // Window height
+                    ConstraintLayout.LayoutParams.WRAP_CONTENT // Window height
                 )
+
+                val cancelButton = view.findViewById<Button>(R.id.cancelButton)
+                val saveButton = view.findViewById<Button>(R.id.saveButton)
+
+                // Set focus on popup window
+                popupWindow.isOutsideTouchable = true
+                popupWindow.isFocusable = true
+                popupWindow.isTouchable = true
+                popupWindow.update()
 
                 // Set an elevation for the popup window
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     popupWindow.elevation = 10.0F
                 }
 
-                val buttonPopup = view.findViewById<Button>(R.id.cancelButton)
+                // editText focus
+                val editText = view.findViewById<EditText>(R.id.inputFileName)
 
-                // Set a click listener for popup's button widget
-                buttonPopup.setOnClickListener {
-                    // Dismiss the popup window
-                    popupWindow.dismiss()
-                }
+                editText.requestFocus()
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                editText.postDelayed({
+                    imm.showSoftInput(editText, 0)
+                }, 100)
 
                 // Finally, show the popup window on app
                 TransitionManager.beginDelayedTransition(findViewById(R.id.coordinatorLayout))
@@ -162,20 +172,30 @@ class MainActivity : AppCompatActivity() {
                     0 // Y offset
                 )
 
-                // editText focus
-                val editText = view.findViewById<EditText>(R.id.inputFileName)
+                // Set a click listener for cancel button
+                cancelButton.setOnClickListener {
+                    // Dismiss the popup window
+                    popupWindow.dismiss()
+                }
 
-                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                editText.requestFocus()
-                editText.postDelayed({
-                    imm.showSoftInput(editText, 0)
-                }, 100)
+                // Set a click listener for save button
+                saveButton.setOnClickListener {
+                    cameraSource?.stopRecord(editText.text.toString())
+                    popupWindow.dismiss()
+                }
 
-                cameraSource?.stopRecord("test5")
 //                cameraSource?.playRecords()
                 recordEvent.setImageResource(R.drawable.recording)
                 record = 0
             }
+        }
+    }
+
+    fun showSoftKeyboard(view: View) {
+        if (view.requestFocus()) {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            val isShowing = imm.showSoftInput(view, InputMethodManager.SHOW_FORCED)
+            if (!isShowing) window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         }
     }
 
@@ -224,6 +244,7 @@ class MainActivity : AppCompatActivity() {
             createPoseEstimator() // 모델 가동
         }
     }
+
     // change model when app is running
     // 모델을 변화시키고 그에따른 모델 재가동
     private fun createPoseEstimator() { // 머신러닝 모델가동
