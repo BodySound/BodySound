@@ -22,7 +22,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-
+import org.tensorflow.lite.examples.poseestimation.data.Note
 class MakeSound() {
 
     private val sampleRate = 22050//44100 //샘플링 정도 혹시 너무 버벅거리면 샘플링 줄이기
@@ -31,7 +31,6 @@ class MakeSound() {
         AudioFormat.CHANNEL_OUT_STEREO,
         AudioFormat.ENCODING_PCM_16BIT
     )
-
     private var is_record: Boolean = false
     private var File_Path: String = ""
 //    private var file = File("./" + File_Path)
@@ -40,14 +39,14 @@ class MakeSound() {
 
     private var ratio: Float = 0.0F
     private var Right_Wrist: PointF = PointF(0.0F, 0.0F)
-    var playState = false //재생중:true, 정지:false
-    var recordPlayState = false
+    private var playState = false //재생중:true, 정지:false
+    private var recordPlayState = false
     private var angle: Double = 0.0
     private var recordAngle: Double = 0.0
     private var audioTrack: AudioTrack? = null
     private var recordAudioTrack: AudioTrack?=null
-    private var startFrequency = 130.81 // 초기 주파수 값 ==> 시작점
-    private var synthFrequency = 130.81 // 시작점으로부터 시작하는 주파수 변화
+    private var startFrequency = Note.C3.note // 초기 주파수 값 ==> 시작점
+    private var synthFrequency = Note.C3.note // 시작점으로부터 시작하는 주파수 변화
     private var buffer = ShortArray(minSize)// 버퍼
     private var player = getAudioTrack() // 소리 재생 클라스 생성
     private var recordPlayer = getRecordTrack()
@@ -80,7 +79,7 @@ class MakeSound() {
         }
         else {
             while(true) {
-                if (recordPlayState == true) {
+                if (recordPlayState) {
                     var recordBuffer = playRecord()
                     recordPlayer?.play()
                     //Log.d("test", "start recordplay")
@@ -89,6 +88,8 @@ class MakeSound() {
                     }
                     return@Runnable
                 }
+                else if(!recordPlayState)
+
                 else {
                     recordPlayer?.stop()
                     return@Runnable
@@ -105,11 +106,20 @@ class MakeSound() {
         soundThread!!.start()
     }
 
-    private fun stopSound() { //소리 멈춤
+    fun stopSound() { //소리 멈춤
         playState = false
+    }
+    fun startSound(){
+        playState = true
     }
     fun closeAudioTrack(){
         player?.stop()
+    }
+    fun stopRecordPlay(){
+        recordPlayState = false
+    }
+    fun startRecordPlay(){
+        recordPlayState = true
     }
     /************************************************* get functions ************************************/
     private fun getStartNoteFrequencies(): Double { //주파수 리턴 함수
@@ -129,8 +139,202 @@ class MakeSound() {
     }
 
     /************************************************* set functions ************************************/
-    private fun setStartFrequencies(note: Double) {//ex) input(note) = (Note.C4.note) ==>파라미터
-        startFrequency = note
+    private fun setStartFrequencies(note: String) {//ex) input(note) = (Note.C4.note) ==>파라미터
+        when(note){
+            "C0" -> {
+                startFrequency = Note.C0.note
+            }            "Cs0","Df0" -> {
+                startFrequency = Note.Cs0.note
+            }            "D0" -> {
+                startFrequency = Note.D0.note
+            }            "Ds0","Ef0" -> {
+                startFrequency = Note.Ds0.note
+            }            "E0" -> {
+                startFrequency = Note.E0.note
+            }            "F0" -> {
+                startFrequency = Note.F0.note
+            }            "Fs0","Gf0" -> {
+                startFrequency = Note.Fs0.note
+            }            "G0" -> {
+                startFrequency = Note.G0.note
+            }            "Gs0","Ab0" -> {
+                startFrequency = Note.Gs0.note
+            }            "A0" -> {
+                startFrequency = Note.A0.note
+            }            "As0","Bf0" -> {
+                startFrequency = Note.As0.note
+            }            "B0" -> {
+                startFrequency = Note.B0.note
+            }            "C1" -> {
+                startFrequency = Note.C0.note
+            }            "Cs1","Df1" -> {
+            startFrequency = Note.Cs1.note
+            }            "D1" -> {
+            startFrequency = Note.D0.note
+            }            "Ds1","Ef1" -> {
+            startFrequency = Note.Ds1.note
+            }            "E1" -> {
+            startFrequency = Note.E0.note
+            }            "F1" -> {
+            startFrequency = Note.F0.note
+            }            "Fs1","Gf1" -> {
+            startFrequency = Note.Fs1.note
+            }            "G1" -> {
+            startFrequency = Note.G0.note
+            }            "Gs1","Ab1" -> {
+            startFrequency = Note.Gs1.note
+            }            "A1" -> {
+            startFrequency = Note.A0.note
+            }            "As1","Bf1" -> {
+            startFrequency = Note.As1.note
+            }            "B1" -> {
+            startFrequency = Note.B1.note
+            }            "C2" -> {
+                startFrequency = Note.C2.note
+            }            "Cs2","Df2" -> {
+            startFrequency = Note.Cs2.note
+            }            "D2" -> {
+            startFrequency = Note.D2.note
+            }            "Ds2","Ef2" -> {
+            startFrequency = Note.Ds2.note
+            }            "E2" -> {
+            startFrequency = Note.E2.note
+            }            "F2" -> {
+            startFrequency = Note.F2.note
+            }            "Fs2","Gf2" -> {
+            startFrequency = Note.Fs2.note
+            }            "G2" -> {
+            startFrequency = Note.G2.note
+            }            "Gs2","Ab2" -> {
+            startFrequency = Note.Gs2.note
+            }            "A2" -> {
+            startFrequency = Note.A2.note
+            }            "As2","Bf2" -> {
+            startFrequency = Note.As2.note
+            }            "B2" -> {
+            startFrequency = Note.B2.note
+            }            "C3" -> {
+                startFrequency = Note.C3.note
+            }            "Cs3","Df3" -> {
+            startFrequency = Note.Cs3.note
+            }            "D3" -> {
+            startFrequency = Note.D3.note
+            }            "Ds3","Ef3" -> {
+            startFrequency = Note.Ds3.note
+            }            "E3" -> {
+            startFrequency = Note.E3.note
+            }            "F3" -> {
+            startFrequency = Note.F3.note
+            }            "Fs3","Gf3" -> {
+            startFrequency = Note.Fs3.note
+            }            "G3" -> {
+            startFrequency = Note.G3.note
+            }            "Gs3","Ab3" -> {
+            startFrequency = Note.Gs3.note
+            }            "A3" -> {
+            startFrequency = Note.A3.note
+            }            "As3","Bf3" -> {
+            startFrequency = Note.As0.note
+            }            "B3" -> {
+            startFrequency = Note.B3.note
+            }            "C4" -> {
+                startFrequency = Note.C4.note
+            }            "Cs4","Df4" -> {
+            startFrequency = Note.Cs4.note
+            }            "D4" -> {
+            startFrequency = Note.D4.note
+            }            "Ds4","Ef4" -> {
+            startFrequency = Note.Ds4.note
+            }            "E4" -> {
+            startFrequency = Note.E4.note
+            }            "F4" -> {
+            startFrequency = Note.F4.note
+            }            "Fs4","Gf4" -> {
+            startFrequency = Note.Fs4.note
+            }            "G0" -> {
+            startFrequency = Note.G4.note
+            }            "Gs4","Ab4" -> {
+            startFrequency = Note.Gs4.note
+            }            "A4" -> {
+            startFrequency = Note.A0.note
+            }            "As4","Bf4" -> {
+            startFrequency = Note.As4.note
+            }            "B4" -> {
+            startFrequency = Note.B4.note
+            }            "C5" -> {
+                startFrequency = Note.C5.note
+            }            "Cs5","Df5" -> {
+            startFrequency = Note.Cs5.note
+            }            "D5" -> {
+            startFrequency = Note.D5.note
+            }            "Ds5","Ef5" -> {
+            startFrequency = Note.Ds5.note
+            }            "E5" -> {
+            startFrequency = Note.E5.note
+            }            "F5" -> {
+            startFrequency = Note.F0.note
+            }            "Fs5","Gf5" -> {
+            startFrequency = Note.Fs5.note
+            }            "G5" -> {
+            startFrequency = Note.G5.note
+            }            "Gs5","Ab5" -> {
+            startFrequency = Note.Gs5.note
+            }            "A5" -> {
+            startFrequency = Note.A5.note
+            }            "As5","Bf5" -> {
+            startFrequency = Note.As5.note
+            }            "B5" -> {
+            startFrequency = Note.B5.note
+            }            "C6" -> {
+                startFrequency = Note.C6.note
+            }            "Cs6","Df6" -> {
+            startFrequency = Note.Cs6.note
+            }            "D6" -> {
+            startFrequency = Note.D6.note
+            }            "Ds6","Ef6" -> {
+            startFrequency = Note.Ds6.note
+            }            "E6" -> {
+            startFrequency = Note.E6.note
+            }            "F6" -> {
+            startFrequency = Note.F6.note
+            }            "Fs6","Gf6" -> {
+            startFrequency = Note.Fs6.note
+            }            "G6" -> {
+            startFrequency = Note.G6.note
+            }            "Gs6","Ab6" -> {
+            startFrequency = Note.Gs6.note
+            }            "A6" -> {
+            startFrequency = Note.A6.note
+            }            "As6","Bf6" -> {
+            startFrequency = Note.As6.note
+            }            "B6" -> {
+            startFrequency = Note.B6.note
+            }            "C7" -> {
+                startFrequency = Note.C7.note
+            }            "Cs7","Df7" -> {
+            startFrequency = Note.Cs7.note
+            }            "D7" -> {
+            startFrequency = Note.D7.note
+            }            "Ds7","Ef7" -> {
+            startFrequency = Note.Ds7.note
+            }            "E7" -> {
+            startFrequency = Note.E7.note
+            }            "F7" -> {
+            startFrequency = Note.F7.note
+            }            "Fs7","Gf7" -> {
+            startFrequency = Note.Fs7.note
+            }            "G7" -> {
+            startFrequency = Note.G7.note
+            }            "Gs7","Ab7" -> {
+            startFrequency = Note.Gs7.note
+            }            "A7" -> {
+            startFrequency = Note.A7.note
+            }            "As7","Bf7" -> {
+            startFrequency = Note.As7.note
+            }            "B7" -> {
+            startFrequency = Note.B7.note
+            }
+        }
     }
 
     private fun setNoteFrequencies(ratio: Double) { //주파수 조절 함수 : 아직 확정 못 지음
