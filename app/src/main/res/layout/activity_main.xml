@@ -23,20 +23,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#66000000"
+        app:contentInsetStart="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:contentInsetStart="0dp">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="0dp"
-            android:contentDescription="@null"
-            android:src="@drawable/bodysound_logo"
             android:adjustViewBounds="true"
-            android:scaleType="centerCrop"/>
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bodysound_logo" />
     </androidx.appcompat.widget.Toolbar>
 
     <View
@@ -118,6 +118,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/white_background" />
+
+    <ImageButton
+        android:id="@+id/play_image_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/bottom_image"
+        app:layout_constraintStart_toEndOf="@+id/record_button"
+        app:layout_constraintTop_toTopOf="@+id/bottom_image"
+        tools:ignore="SpeakableTextPresentCheck"
+        tools:srcCompat="@drawable/play_button" />
 
     <ImageButton
         android:id="@+id/record_button"

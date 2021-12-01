@@ -48,9 +48,7 @@ import org.tensorflow.lite.examples.poseestimation.ml.ModelType
 import org.tensorflow.lite.examples.poseestimation.ml.MoveNet
 import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
 import android.view.WindowManager
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import org.tensorflow.lite.examples.poseestimation.sound.AudioCaptureService
 
 
 class MainActivity : AppCompatActivity() {
@@ -129,6 +127,7 @@ class MainActivity : AppCompatActivity() {
 
         var record = 0
 
+        // record event
         recordEvent.setOnClickListener {
             val path = getExternalFilesDir(null)
             // external 저장소
@@ -152,7 +151,7 @@ class MainActivity : AppCompatActivity() {
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
                 // Inflate a custom view using layout inflater
-                val view = inflater.inflate(R.layout.popup_view, null)
+                val view = inflater.inflate(R.layout.save_view, null)
 
                 // Initialize a new instance of popup window
                 val popupWindow = PopupWindow(
@@ -210,7 +209,74 @@ class MainActivity : AppCompatActivity() {
                 record = 0
             }
         }
+
+        // play event
+        val playEvent = findViewById<ImageButton>(R.id.play_image_button)
+        playEvent.setImageResource(R.drawable.play_button)
+
+        playEvent.setOnClickListener {
+            // Initialize a new layout inflater instance
+            val inflater: LayoutInflater =
+                getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+            // Inflate a custom view using layout inflater
+            val view = inflater.inflate(R.layout.play_view, null)
+
+            // Initialize a new instance of popup window
+            val popupWindow = PopupWindow(
+                view, // Custom view to show in popup window
+                ConstraintLayout.LayoutParams.MATCH_PARENT, // Width of popup window
+                ConstraintLayout.LayoutParams.WRAP_CONTENT // Window height
+            )
+
+            val cancelButton = view.findViewById<Button>(R.id.cancelButton2)
+            val playButton = view.findViewById<Button>(R.id.play_button)
+
+            // Set focus on popup window
+            popupWindow.isOutsideTouchable = true
+            popupWindow.isFocusable = true
+            popupWindow.isTouchable = true
+            popupWindow.update()
+
+            // Set an elevation for the popup window
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                popupWindow.elevation = 10.0F
+            }
+
+            // editText focus
+            val editText = view.findViewById<EditText>(R.id.inputFileName2)
+
+            editText.requestFocus()
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            editText.postDelayed({
+                imm.showSoftInput(editText, 0)
+            }, 100)
+
+            // Finally, show the popup window on app
+            TransitionManager.beginDelayedTransition(findViewById(R.id.coordinatorLayout))
+            popupWindow.showAtLocation(
+                findViewById(R.id.coordinatorLayout), // Location to display popup window
+                Gravity.CENTER, // Exact position of layout to display popup
+                0, // X offset
+                0 // Y offset
+            )
+
+            // Set a click listener for cancel button
+            cancelButton.setOnClickListener {
+                // Dismiss the popup window
+                popupWindow.dismiss()
+            }
+
+            // Set a click listener for play button
+            playButton.setOnClickListener {
+                // play recorded sound
+                popupWindow.dismiss()
+            }
+        }
     }
+
+
+
     private fun isRecordAudioPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
             this,
