@@ -206,7 +206,7 @@ class CameraSource(
         this.makeSound?.stopRecord(file_name)
     }
     fun playRecords(){
-        this.makeSound?.recordPlayState = true
+        this.makeSound?.startRecordPlay()
         makeSound?.recordPlayThread = Thread(makeSound?.playRecorded)
         makeSound?.recordPlayThread!!.start()
     }
@@ -250,8 +250,8 @@ class CameraSource(
         stopImageReaderThread()
         detector?.close()
         detector = null
-        makeSound?.playState = false
-        makeSound?.recordPlayState =false
+        makeSound?.stopSound()
+        makeSound?.stopRecordPlay()
         /**
         fpsTimer?.cancel()
         fpsTimer = null
@@ -298,7 +298,7 @@ class CameraSource(
             outputBitmap = VisualizationUtils.drawBodyKeypoints(bitmap, person)
         }
         else{
-            makeSound?.playState = false
+            makeSound?.stopSound()
         }
         val holder = surfaceView.holder
         val surfaceCanvas = holder.lockCanvas()
