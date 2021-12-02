@@ -120,10 +120,6 @@ class MainActivity : AppCompatActivity() {
 
         val recordEvent = findViewById<ImageButton>(R.id.record_button)
 
-        if (!isCameraPermissionGranted()) {//카메라 접속 허가 없다
-            requestPermission()//권한받기
-        }
-
         var record = 0
 
         // record event
@@ -132,19 +128,18 @@ class MainActivity : AppCompatActivity() {
             // external 저장소
 
             if (record == 0) {
-                if (!isRecordAudioPermissionGranted()) {
-                    requestRecordAudioPermission()
-                } else {
-                    startMediaProjectionRequest()
-                }
+                startCapturing()
+
                 Log.d("fucking ","record")
                 openCamera()
-                //cameraSource?.resume()
 
                 cameraSource?.startRecord(path)
                 recordEvent.setImageResource(R.drawable.record_stop)
                 record = 1
             } else {
+                // stop record
+                stopCapturing()
+
                 // Initialize a new layout inflater instance
                 val inflater: LayoutInflater =
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -174,13 +169,13 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 // editText focus
-                val editText = view.findViewById<EditText>(R.id.inputFileName)
-
-                editText.requestFocus()
-                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                editText.postDelayed({
-                    imm.showSoftInput(editText, 0)
-                }, 100)
+//                val editText = view.findViewById<EditText>(R.id.inputFileName)
+//
+//                editText.requestFocus()
+//                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+//                editText.postDelayed({
+//                    imm.showSoftInput(editText, 0)
+//                }, 100)
 
                 // Finally, show the popup window on app
                 TransitionManager.beginDelayedTransition(findViewById(R.id.coordinatorLayout))
@@ -199,7 +194,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Set a click listener for save button
                 saveButton.setOnClickListener {
-                    cameraSource?.stopRecord(editText.text.toString())
+//                    cameraSource?.stopRecord(editText.text.toString())
                     popupWindow.dismiss()
                 }
 
@@ -243,13 +238,13 @@ class MainActivity : AppCompatActivity() {
             }
 
             // editText focus
-            val editText = view.findViewById<EditText>(R.id.inputFileName2)
+//            val editText = view.findViewById<EditText>(R.id.inputFileName2)
 
-            editText.requestFocus()
-            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            editText.postDelayed({
-                imm.showSoftInput(editText, 0)
-            }, 100)
+//            editText.requestFocus()
+//            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+//            editText.postDelayed({
+//                imm.showSoftInput(editText, 0)
+//            }, 100)
 
             // Finally, show the popup window on app
             TransitionManager.beginDelayedTransition(findViewById(R.id.coordinatorLayout))
@@ -467,6 +462,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             startMediaProjectionRequest()
         }
+    }
+
+    private fun stopCapturing() {
+        startService(Intent(this, AudioCaptureService::class.java).apply {
+            action = AudioCaptureService.ACTION_STOP
+        })
     }
 
     @SuppressLint("MissingSuperCall")
