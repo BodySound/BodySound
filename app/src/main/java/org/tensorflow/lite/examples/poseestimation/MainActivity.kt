@@ -208,63 +208,25 @@ class MainActivity : AppCompatActivity() {
         val playEvent = findViewById<ImageButton>(R.id.play_image_button)
         playEvent.setImageResource(R.drawable.play_button)
 
+        var playState = false
+
         playEvent.setOnClickListener {
-            // Initialize a new layout inflater instance
-            val inflater: LayoutInflater =
-                getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            // play recorded sound
 
-            // Inflate a custom view using layout inflater
-            val view = inflater.inflate(R.layout.play_view, null)
+            if(!playState) {
+                playEvent.setImageResource(R.drawable.play_stop_button)
+                playState = true
 
-            // Initialize a new instance of popup window
-            val popupWindow = PopupWindow(
-                view, // Custom view to show in popup window
-                ConstraintLayout.LayoutParams.MATCH_PARENT, // Width of popup window
-                ConstraintLayout.LayoutParams.WRAP_CONTENT // Window height
-            )
-
-            val cancelButton = view.findViewById<Button>(R.id.cancelButton2)
-            val playButton = view.findViewById<Button>(R.id.play_button)
-
-            // Set focus on popup window
-            popupWindow.isOutsideTouchable = true
-            popupWindow.isFocusable = true
-            popupWindow.isTouchable = true
-            popupWindow.update()
-
-            // Set an elevation for the popup window
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                popupWindow.elevation = 10.0F
-            }
-
-            // editText focus
-//            val editText = view.findViewById<EditText>(R.id.inputFileName2)
-
-//            editText.requestFocus()
-//            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-//            editText.postDelayed({
-//                imm.showSoftInput(editText, 0)
-//            }, 100)
-
-            // Finally, show the popup window on app
-            TransitionManager.beginDelayedTransition(findViewById(R.id.coordinatorLayout))
-            popupWindow.showAtLocation(
-                findViewById(R.id.coordinatorLayout), // Location to display popup window
-                Gravity.CENTER, // Exact position of layout to display popup
-                0, // X offset
-                0 // Y offset
-            )
-
-            // Set a click listener for cancel button
-            cancelButton.setOnClickListener {
-                // Dismiss the popup window
-                popupWindow.dismiss()
-            }
-
-            // Set a click listener for play button
-            playButton.setOnClickListener {
                 // play recorded sound
-                popupWindow.dismiss()
+
+                // 끝나면 버튼이 다시 돌아옴
+//                playEvent.setImageResource(R.drawable.play_button)
+            }
+            else {
+                playEvent.setImageResource(R.drawable.play_button)
+                playState = false
+
+                // stop playing
             }
         }
 
