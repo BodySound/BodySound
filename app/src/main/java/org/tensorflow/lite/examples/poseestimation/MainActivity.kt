@@ -78,6 +78,8 @@ class MainActivity : AppCompatActivity() {
     private var cameraSource: CameraSource? = null
     //---------------
 
+    var player: AudioTrackPlayer = AudioTrackPlayer()
+
     private val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()// 권한을 요청
@@ -140,9 +142,6 @@ class MainActivity : AppCompatActivity() {
                 recordEvent.setImageResource(R.drawable.record_stop)
                 record = 1
             } else {
-                // stop record
-                stopCapturing()
-
                 // Initialize a new layout inflater instance
                 val inflater: LayoutInflater =
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -200,6 +199,7 @@ class MainActivity : AppCompatActivity() {
 //                    cameraSource?.stopRecord(editText.text.toString())
                     popupWindow.dismiss()
                 }
+
                 stopCapturing()
 //                cameraSource?.playRecords()
                 recordEvent.setImageResource(R.drawable.recording)
@@ -213,22 +213,26 @@ class MainActivity : AppCompatActivity() {
 
         var playState = false
 
-        var player: AudioTrackPlayer = AudioTrackPlayer()
-
         playEvent.setOnClickListener {
             // play recorded sound
 
             if(!playState) {
-                playEvent.setImageResource(R.drawable.play_stop_button)
-                playState = true
 
-                // play recorded sound
                 val audioCapturesDirectory = File(getExternalFilesDir(null), "/AudioCaptures")
-                if (!audioCapturesDirectory.exists())
-                    audioCapturesDirectory.mkdirs()
-                player.prepare(audioCapturesDirectory.absolutePath + "/Capture-BodySound.pcm")
-                player.play()
 
+                if (!audioCapturesDirectory.exists()){
+                    Toast.makeText(
+                        this, "저장된 파일이 없습니다.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                else {
+                    playEvent.setImageResource(R.drawable.play_stop_button)
+                    playState = true
+                    audioCapturesDirectory.mkdirs()
+                    player.prepare(audioCapturesDirectory.absolutePath + "/Capture-BodySound.pcm")
+                    player.play()
+                }
                 // 끝나면 버튼이 다시 돌아옴
 //                playEvent.setImageResource(R.drawable.play_button)
             }
@@ -240,7 +244,6 @@ class MainActivity : AppCompatActivity() {
                 // stop playing
             }
         }
-
         // set octave bar
         setOctaveBar()
     }
@@ -462,10 +465,5 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }
-    }
-    private fun stopCapturing() {
-        startService(Intent(this, AudioCaptureService::class.java).apply {
-            action = AudioCaptureService.ACTION_STOP
-        })
     }
 }
