@@ -49,6 +49,9 @@ import org.tensorflow.lite.examples.poseestimation.ml.MoveNet
 import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
 import android.view.WindowManager
 import androidx.core.app.ActivityCompat
+import org.tensorflow.lite.examples.poseestimation.sound.AudioCaptureService
+import org.tensorflow.lite.examples.poseestimation.sound.AudioTrackPlayer
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -202,7 +205,7 @@ class MainActivity : AppCompatActivity() {
                     cameraSource?.stopRecord(editText.text.toString())
                     popupWindow.dismiss()
                 }
-
+                stopCapturing()
 //                cameraSource?.playRecords()
                 recordEvent.setImageResource(R.drawable.recording)
                 record = 0
@@ -269,6 +272,13 @@ class MainActivity : AppCompatActivity() {
             // Set a click listener for play button
             playButton.setOnClickListener {
                 // play recorded sound
+                val audioCapturesDirectory = File(getExternalFilesDir(null), "/AudioCaptures")
+                if (!audioCapturesDirectory.exists())
+                    audioCapturesDirectory.mkdirs()
+                var player: AudioTrackPlayer = AudioTrackPlayer()
+                player.prepare(audioCapturesDirectory.absolutePath + "/Capture-BodySound.pcm")
+                player.play()
+
                 popupWindow.dismiss()
             }
         }
@@ -282,7 +292,6 @@ class MainActivity : AppCompatActivity() {
         octaveBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 cameraSource?.setOctaveBar("C$progress")
-                Log.d("test", "C$progress")
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -356,7 +365,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() { // 생명 주기에 대한 코드
         Log.d("Main","onResume")
         //openCamera()
-        Log.d("test to data size" , cameraSource.toString())
         cameraSource?.resume()
         super.onResume()
     }
@@ -490,5 +498,10 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }
+    }
+    private fun stopCapturing() {
+        startService(Intent(this, AudioCaptureService::class.java).apply {
+            action = AudioCaptureService.ACTION_STOP
+        })
     }
 }
