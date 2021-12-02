@@ -65,7 +65,6 @@ class MakeSound() {
             while(playState) {
                 generateTone()
                 if (is_record) {
-                    Log.d("test", "is recording")
                     this.record_CD.add(buffer)
                 }
                 player?.write(buffer, 0, buffer.size, WRITE_BLOCKING)

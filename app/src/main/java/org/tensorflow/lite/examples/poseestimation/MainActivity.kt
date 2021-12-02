@@ -49,6 +49,9 @@ import org.tensorflow.lite.examples.poseestimation.ml.MoveNet
 import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
 import android.view.WindowManager
 import androidx.core.app.ActivityCompat
+import org.tensorflow.lite.examples.poseestimation.sound.AudioCaptureService
+import org.tensorflow.lite.examples.poseestimation.sound.AudioTrackPlayer
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -197,7 +200,7 @@ class MainActivity : AppCompatActivity() {
 //                    cameraSource?.stopRecord(editText.text.toString())
                     popupWindow.dismiss()
                 }
-
+                stopCapturing()
 //                cameraSource?.playRecords()
                 recordEvent.setImageResource(R.drawable.recording)
                 record = 0
@@ -210,6 +213,8 @@ class MainActivity : AppCompatActivity() {
 
         var playState = false
 
+        var player: AudioTrackPlayer = AudioTrackPlayer()
+
         playEvent.setOnClickListener {
             // play recorded sound
 
@@ -218,6 +223,11 @@ class MainActivity : AppCompatActivity() {
                 playState = true
 
                 // play recorded sound
+                val audioCapturesDirectory = File(getExternalFilesDir(null), "/AudioCaptures")
+                if (!audioCapturesDirectory.exists())
+                    audioCapturesDirectory.mkdirs()
+                player.prepare(audioCapturesDirectory.absolutePath + "/Capture-BodySound.pcm")
+                player.play()
 
                 // 끝나면 버튼이 다시 돌아옴
 //                playEvent.setImageResource(R.drawable.play_button)
@@ -225,6 +235,7 @@ class MainActivity : AppCompatActivity() {
             else {
                 playEvent.setImageResource(R.drawable.play_button)
                 playState = false
+                player.stop()
 
                 // stop playing
             }
@@ -239,7 +250,6 @@ class MainActivity : AppCompatActivity() {
         octaveBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 cameraSource?.setOctaveBar("C$progress")
-                Log.d("test", "C$progress")
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -313,7 +323,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() { // 생명 주기에 대한 코드
         Log.d("Main","onResume")
         //openCamera()
-        Log.d("test to data size" , cameraSource.toString())
         cameraSource?.resume()
         super.onResume()
     }
@@ -453,5 +462,10 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }
+    }
+    private fun stopCapturing() {
+        startService(Intent(this, AudioCaptureService::class.java).apply {
+            action = AudioCaptureService.ACTION_STOP
+        })
     }
 }
