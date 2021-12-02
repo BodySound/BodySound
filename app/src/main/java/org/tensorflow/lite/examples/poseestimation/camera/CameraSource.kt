@@ -214,6 +214,10 @@ class CameraSource(
      * 분류기 직접 설정
      * **/
 
+    fun setOctaveBar(octave: String) {
+        makeSound?.setStartFrequencies(octave)
+    }
+
     /**resume 함수**/
     /**
     fun resume() {

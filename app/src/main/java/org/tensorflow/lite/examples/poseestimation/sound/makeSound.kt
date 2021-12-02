@@ -139,7 +139,7 @@ class MakeSound() {
     }
 
     /************************************************* set functions ************************************/
-    private fun setStartFrequencies(note: String) {//ex) input(note) = (Note.C4.note) ==>파라미터
+    fun setStartFrequencies(note: String) {//ex) input(note) = (Note.C4.note) ==>파라미터
         when(note){
             "C0" -> {
                 startFrequency = Note.C0.note
