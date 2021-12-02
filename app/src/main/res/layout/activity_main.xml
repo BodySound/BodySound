@@ -145,4 +145,15 @@
         app:srcCompat="@drawable/recording"
         tools:ignore="SpeakableTextPresentCheck" />
 
+    <SeekBar
+        android:id="@+id/octaveBar"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:max="7"
+        android:progress="3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

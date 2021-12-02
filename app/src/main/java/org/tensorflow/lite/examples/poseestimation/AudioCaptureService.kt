@@ -12,8 +12,10 @@ import android.media.AudioPlaybackCaptureConfiguration
 import android.media.AudioRecord
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import java.io.File
 import java.io.FileOutputStream
@@ -31,6 +33,7 @@ class AudioCaptureService : Service() {
     private lateinit var audioCaptureThread: Thread
     private var audioRecord: AudioRecord? = null
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
@@ -45,6 +48,7 @@ class AudioCaptureService : Service() {
             applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel() {
         val serviceChannel = NotificationChannel(
             NOTIFICATION_CHANNEL_ID,
@@ -56,6 +60,7 @@ class AudioCaptureService : Service() {
         manager.createNotificationChannel(serviceChannel)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         return if (intent != null) {
             when (intent.action) {
@@ -79,6 +84,7 @@ class AudioCaptureService : Service() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun startAudioCapture() {
         val config = AudioPlaybackCaptureConfiguration.Builder(mediaProjection!!)
             .addMatchingUsage(AudioAttributes.USAGE_MEDIA) // TODO provide UI options for inclusion/exclusion

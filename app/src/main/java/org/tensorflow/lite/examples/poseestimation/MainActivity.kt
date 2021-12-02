@@ -67,7 +67,6 @@ class MainActivity : AppCompatActivity() {
      * 2 == PoseNet model
      **/
     private var modelPos = 1
-    private var makeSound: MakeSound? = MakeSound()
 
     /** Default device is CPU */
     private var device = Device.CPU
@@ -273,6 +272,27 @@ class MainActivity : AppCompatActivity() {
                 popupWindow.dismiss()
             }
         }
+
+        // set octave bar
+        setOctaveBar()
+    }
+
+    private fun setOctaveBar() {
+        val octaveBar : SeekBar = findViewById(R.id.octaveBar)
+        octaveBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                cameraSource?.setOctaveBar("C$progress")
+                Log.d("test", "C$progress")
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+            }
+        })
     }
 
 
