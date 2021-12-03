@@ -3,9 +3,7 @@
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -13,9 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================
 */
-
 package org.tensorflow.lite.examples.poseestimation.ml
-
 import android.content.Context
 import android.graphics.*
 import android.os.SystemClock
@@ -38,37 +34,30 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 import kotlin.math.pow
-
 enum class ModelType {
 //    Lightning,
     Thunder
 }
-
 class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: GpuDelegate?) :
     PoseDetector {
-
     // static 같은 개념
     // 객체 사용 가능
     companion object {
         private const val MIN_CROP_KEYPOINT_SCORE = .2f
         private const val CPU_NUM_THREADS = 4
-
         // Parameters that control how large crop region should be expanded from previous frames'
         // body keypoints.
         private const val TORSO_EXPANSION_RATIO = 1.9f
         private const val BODY_EXPANSION_RATIO = 1.2f
         // controls size of crop region
-
         // TFLite file names.
         private const val THUNDER_FILENAME = "movenet_thunder.tflite"
-
         // allow specifying model type.
         fun create(context: Context, device: Device, modelType: ModelType): MoveNet {
             val options = Interpreter.Options()
             // TFLite interpreter의 option
             var gpuDelegate: GpuDelegate? = null
             // 기본 옵션 GPU 안씀
-
             options.setNumThreads(CPU_NUM_THREADS)
             when (device) {
                 Device.CPU -> {
@@ -91,30 +80,24 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
                 gpuDelegate
             )
         }
-
         // default to thunder.
         fun create(context: Context, device: Device): MoveNet =
             create(context, device, ModelType.Thunder)
     }
-
     // variables
     private var cropRegion: RectF? = null
     private val inputWidth = interpreter.getInputTensor(0).shape()[1]
     private val inputHeight = interpreter.getInputTensor(0).shape()[2]
     private var outputShape: IntArray = interpreter.getOutputTensor(0).shape()
     // result shape from output tensor (array)
-
     // 얘를 거리계산 함수로 바꾸면 될듯
     override fun getLeftWristRatio(bitmap: Bitmap): Person {
         if (cropRegion == null) {
             cropRegion = initRectF(bitmap.width, bitmap.height)
         }
-
         val numKeyPoints = outputShape[2]
         val keyPoints = mutableListOf<KeyPoint>()
-
         var totalScore = 0f
-
         cropRegion?.run {
             val rect = RectF(
                 (left * bitmap.width),
@@ -124,14 +107,12 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
             )
             // bitmap은 매개변수
             // rect init
-
             val detectBitmap = Bitmap.createBitmap(
                 rect.width().toInt(),
                 rect.height().toInt(),
                 Bitmap.Config.ARGB_8888
             // each pixel is stored on 4 bytes
             )
-
             Canvas(detectBitmap).drawBitmap(
                 bitmap,
                 -rect.left,
@@ -139,26 +120,21 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
                 null
             )
             // 좌표 구하는데 필요
-
             val inputTensor = processInputImage(detectBitmap, inputWidth, inputHeight)
             // process 한 image
             val outputTensor = TensorBuffer.createFixedSize(outputShape, DataType.FLOAT32)
             val widthRatio = detectBitmap.width.toFloat() / inputWidth
             val heightRatio = detectBitmap.height.toFloat() / inputHeight
-
             val positions = mutableListOf<Float>()
-
             inputTensor?.let { input ->
                 interpreter.run(input.buffer, outputTensor.buffer.rewind())
                 val output = outputTensor.floatArray
                 for (idx in 0 until numKeyPoints) {
                     val x = output[idx * 3 + 1] * inputWidth * widthRatio
                     val y = output[idx * 3 + 0] * inputHeight * heightRatio
-
                     positions.add(x)
                     positions.add(y)
                     // save positions
-
                     val score = output[idx * 3 + 2]
                     // output has score
                     keyPoints.add(
@@ -173,12 +149,10 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
                     )
                     totalScore += score
                     // save keypoints
-
                 }
             }
             val matrix = Matrix()
             val points = positions.toFloatArray()
-
             matrix.postTranslate(rect.left, rect.top)
             // translate
             matrix.mapPoints(points)
@@ -192,11 +166,8 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
             // new crop region
             cropRegion = determineRectF(keyPoints, bitmap.width, bitmap.height)
         }
-
         val leftWristPos = keyPoints[BodyPart.LEFT_WRIST.position].coordinate
-
-        val ratio = ((bitmap.height.toFloat()-leftWristPos.y) / bitmap.height.toFloat()) * 8.0f
-
+        val ratio = ((bitmap.height.toFloat()-leftWristPos.y) / bitmap.height.toFloat()) * 16.0f
         //Log.d("test", bitmap.height.toFloat().toString())
         return Person(
             keyPoints,
