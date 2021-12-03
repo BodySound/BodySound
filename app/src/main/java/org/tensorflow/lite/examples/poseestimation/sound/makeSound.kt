@@ -18,10 +18,12 @@ import android.content.pm.PackageManager
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import org.tensorflow.lite.examples.poseestimation.R
 import org.tensorflow.lite.examples.poseestimation.data.Note
 class MakeSound() {
 
@@ -36,7 +38,6 @@ class MakeSound() {
 //    private var file = File("./" + File_Path)
     private var file: File? = null
     private var record_CD = mutableListOf<ShortArray>()
-
     private var ratio: Float = 0.0F
     private var Right_Wrist: PointF = PointF(0.0F, 0.0F)
     private var playState = false //재생중:true, 정지:false
