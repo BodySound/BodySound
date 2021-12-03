@@ -8,7 +8,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageButton;
 
-import org.tensorflow.lite.examples.poseestimation.R;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
