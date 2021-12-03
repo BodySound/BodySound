@@ -18,11 +18,7 @@ package org.tensorflow.lite.examples.poseestimation.ml
 
 import android.content.Context
 import android.graphics.*
-import android.os.SystemClock
 import android.util.Log
-import androidx.core.graphics.minus
-import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
-import com.google.android.material.snackbar.Snackbar
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.examples.poseestimation.data.*
@@ -36,8 +32,6 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.sqrt
-import kotlin.math.pow
 
 enum class ModelType {
 //    Lightning,
@@ -195,9 +189,8 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
 
         val leftWristPos = keyPoints[BodyPart.LEFT_WRIST.position].coordinate
 
-        val ratio = ((bitmap.height.toFloat()-leftWristPos.y) / bitmap.height.toFloat()) * 8.0f
+        val ratio = ((bitmap.height.toFloat()-leftWristPos.y) / bitmap.height.toFloat()) * 10.0f
 
-        //Log.d("test", bitmap.height.toFloat().toString())
         return Person(
             keyPoints,
             ratio,
@@ -208,34 +201,7 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
             **/
             totalScore / numKeyPoints
         )
-//        return shoulder_dist
-
-        // Person에 keyPoints가 있기 때문에 좌표를 쓸수 있을것으로 보임
     }
-    private fun CCW(var1 :PointF,var2 :PointF,var3 :PointF): Float {
-        var result = var1.x * var2.y + var2.x * var3.y + var3.x * var1.y
-        result -= (var1.y * var2.x + var2.y * var3.x + var3.y * var1.x)
-        if(result < 0) result = -1.0F
-        else if( result > 0) result = 1.0F
-        return result
-    }
-    private fun is_in_Body(right_wrist_pos: PointF, right_elbow_pos: PointF,
-                           left_shoulder_pos: PointF, right_shoulder_pos: PointF,
-                           left_hip_pos: PointF, right_hip_pos: PointF): Boolean {
-        var result = 0
-        if(CCW(right_wrist_pos,left_shoulder_pos,right_elbow_pos) * CCW(right_wrist_pos,right_shoulder_pos,right_elbow_pos) < 0
-            && CCW(left_shoulder_pos,right_wrist_pos,right_shoulder_pos) * CCW(left_shoulder_pos,right_elbow_pos,right_shoulder_pos) < 0) result += 1
-        if(CCW(right_wrist_pos,right_shoulder_pos,right_elbow_pos) * CCW(right_wrist_pos,right_hip_pos,right_elbow_pos) < 0
-            && CCW(right_shoulder_pos,right_wrist_pos,right_hip_pos) * CCW(right_shoulder_pos,right_elbow_pos,right_hip_pos) < 0) result += 1
-        if(CCW(right_wrist_pos,right_hip_pos,right_elbow_pos) * CCW(right_wrist_pos,left_hip_pos,right_elbow_pos) < 0
-            && CCW(right_hip_pos,right_wrist_pos,left_hip_pos) * CCW(right_hip_pos,right_elbow_pos,left_hip_pos) < 0) result += 1
-        if(CCW(right_wrist_pos,left_hip_pos,right_elbow_pos) * CCW(right_wrist_pos,left_shoulder_pos,right_elbow_pos) < 0
-            && CCW(left_hip_pos,right_wrist_pos,left_shoulder_pos) * CCW(left_hip_pos,right_elbow_pos,left_shoulder_pos) < 0) result += 1
-        Log.d("test", result.toString())
-        if(result == 1) return true
-        else return false
-    }
-
     override fun close() {
         gpuDelegate?.close()
         interpreter.close()

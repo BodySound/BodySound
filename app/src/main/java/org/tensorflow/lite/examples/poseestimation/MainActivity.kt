@@ -134,11 +134,7 @@ class MainActivity : AppCompatActivity() {
 
             if (record == 0) {
                 startCapturing()
-
-                Log.d("fucking ","record")
                 openCamera()
-
-                cameraSource?.startRecord(path)
                 recordEvent.setImageResource(R.drawable.record_stop)
                 record = 1
             } else {
@@ -306,9 +302,6 @@ class MainActivity : AppCompatActivity() {
                     putExtra(AudioCaptureService.EXTRA_RESULT_DATA, data!!)
                 }
                 startForegroundService(audioCaptureIntent)
-
-
-                Log.d("stamp" ,"onActivityResult")
             } else {
                 Toast.makeText(
                     this, "Request to obtain MediaProjection denied.",
@@ -318,20 +311,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
     override fun onStart() { // 생명 주기에 대한 코드 : 시작할 때
-        Log.d("Main","onStart")
         super.onStart()
         openCamera() //카메라 오픈 함수 밑에 있음
     }
 
     override fun onResume() { // 생명 주기에 대한 코드
-        Log.d("Main","onResume")
         //openCamera()
         cameraSource?.resume()
         super.onResume()
     }
 
     override fun onPause() { // 생명 주기에 대한 코드
-        Log.d("Main","onPause")
         //cameraSource?.close()
         cameraSource = null
         super.onPause()
@@ -451,7 +441,6 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         if (requestCode == RECORD_AUDIO_PERMISSION_REQUEST_CODE) {
-            Log.d("stamp" ,"onRequestPermissionsResult")
             if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(
                     this,

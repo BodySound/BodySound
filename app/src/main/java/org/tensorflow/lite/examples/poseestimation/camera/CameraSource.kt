@@ -140,7 +140,6 @@ class CameraSource(
             /** 끊임없이 반복 캡쳐 **/
             cameraRequest?.build()?.let {
                 session?.setRepeatingRequest(it, null, null)
-                Log.d("fucking ","video")
             }
         }
     }
@@ -199,17 +198,6 @@ class CameraSource(
             this.detector = detector
         }
     }
-    fun startRecord(Filepath: File?) {
-        this.makeSound?.startRecord(Filepath)
-    }
-    fun stopRecord(file_name: String) {
-        this.makeSound?.stopRecord(file_name)
-    }
-    fun playRecords(){
-        this.makeSound?.startRecordPlay()
-        makeSound?.recordPlayThread = Thread(makeSound?.playRecorded)
-        makeSound?.recordPlayThread!!.start()
-    }
     /**main activity에서 사용한 세팅 함수
      * 분류기 직접 설정
      * **/
@@ -238,13 +226,11 @@ class CameraSource(
      **/
 
     fun resume() {
-        Log.d("Camera","resume")
         imageReaderThread = HandlerThread("imageReaderThread").apply { start() }
         imageReaderHandler = Handler(imageReaderThread!!.looper)
     }
     /**종료 함수**/
     fun close() {
-        Log.d("Camera","close")
         session?.close()
         session = null
         camera?.close()
@@ -265,7 +251,6 @@ class CameraSource(
     // process image
     private fun processImage(bitmap: Bitmap) {
         var person: Person? = null
-        var classificationResult: List<Pair<String, Float>>? = null
         synchronized(lock) {/**동기화된 작업 실행**/
             detector?.getLeftWristRatio(bitmap)?.let {
                 /**it 는 함수를 통해 리턴된 person 값 입니다.**/
@@ -326,7 +311,6 @@ class CameraSource(
             }
             val right: Int = left + screenWidth
             val bottom: Int = top + screenHeight
-
             canvas.drawBitmap(
                 outputBitmap, Rect(0, 0, outputBitmap.width, outputBitmap.height),
                 Rect(left, top, right, bottom), null
@@ -335,7 +319,6 @@ class CameraSource(
         }
     }
     private fun stopImageReaderThread() {
-        Log.d("Camera","stopImageReaderThread")
         imageReaderThread?.quitSafely()
         try {
             imageReaderThread?.join()

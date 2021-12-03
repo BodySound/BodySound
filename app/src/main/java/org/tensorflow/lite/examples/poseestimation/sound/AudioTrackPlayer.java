@@ -6,10 +6,6 @@ import android.media.AudioTrack;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.ImageButton;
-
-import org.tensorflow.lite.examples.poseestimation.R;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -67,7 +63,6 @@ public class AudioTrackPlayer {
         AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_STEREO,
                 AudioFormat.ENCODING_PCM_16BIT, intSize, AudioTrack.MODE_STREAM);
         if (audioTrack == null) {
-            Log.d("TCAudio", "audio track is not initialised ");
             return null;
         }
 
@@ -87,7 +82,6 @@ public class AudioTrackPlayer {
     }
 
     private class PlayerProcess implements Runnable {
-
         @Override
         public void run() {
             while (bytesread < size && isPlay) {
@@ -119,15 +113,10 @@ public class AudioTrackPlayer {
             if (isLooping && isPlay) mHandler.postDelayed(mLopingRunnable, 100);
         }
     }
-
     public void setLooping() {
         isLooping = !isLooping;
     }
-
-    public void pause() {
-
-    }
-
+    public void pause() {}
     public void stop() {
         isPlay = false;
         if (mThread != null) {
@@ -140,8 +129,5 @@ public class AudioTrackPlayer {
             audioPlayer = null;
         }
     }
-
-    public void reset() {
-
-    }
+    public void reset() {}
 }
