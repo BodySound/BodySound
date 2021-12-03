@@ -25,7 +25,8 @@ import androidx.core.content.ContextCompat
 import org.tensorflow.lite.examples.poseestimation.data.Note
 class MakeSound() {
 
-    private val sampleRate = 22050//44100 //샘플링 정도 혹시 너무 버벅거리면 샘플링 줄이기
+//    private val sampleRate = 22050//44100 //샘플링 정도 혹시 너무 버벅거리면 샘플링 줄이기
+    private val sampleRate = 10000//44100 //샘플링 정도 혹시 너무 버벅거리면 샘플링 줄이기
     private var minSize = getMinBufferSize(
         sampleRate,
         AudioFormat.CHANNEL_OUT_STEREO,
@@ -425,13 +426,15 @@ class MakeSound() {
             (right_wrist.x - Right_Wrist.x).toDouble(),
             2.0
         ) + Math.pow((right_wrist.y - Right_Wrist.y).toDouble(), 2.0)
-        if (distance > 100) {
+
+
+        if (right_wrist.x > 400) {
             setNoteFrequencies(ratio.toDouble())
             /*var I_ratio = (ratio * 50.0f).toInt()
             if (I_ratio == PI_ratio)
                 return
             PI_ratio = I_ratio*/
-        } else if (distance <= 100 && playState) {
+        } else if (playState) {
             setNoteFrequenciesZero()
             //makeSound()
             //stopSound()

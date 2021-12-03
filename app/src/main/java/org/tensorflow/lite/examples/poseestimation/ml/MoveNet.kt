@@ -201,7 +201,7 @@ class MoveNet(private val interpreter: Interpreter, private var gpuDelegate: Gpu
         return Person(
             keyPoints,
             ratio,
-            keyPoints[BodyPart.RIGHT_WRIST.position].coordinate,
+            keyPoints[BodyPart.LEFT_WRIST.position].coordinate,
             /**is_in_Body(keyPoints[BodyPart.RIGHT_WRIST.position].coordinate,keyPoints[BodyPart.RIGHT_ELBOW.position].coordinate,
                 keyPoints[BodyPart.LEFT_SHOULDER.position].coordinate,keyPoints[BodyPart.RIGHT_SHOULDER.position].coordinate,
                 keyPoints[BodyPart.LEFT_HIP.position].coordinate,keyPoints[BodyPart.RIGHT_HIP.position].coordinate),

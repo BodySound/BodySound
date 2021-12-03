@@ -328,8 +328,8 @@ class CameraSource(
             val bottom: Int = top + screenHeight
 
             canvas.drawBitmap(
-                outputBitmap, Rect(0, 0, outputBitmap.width, outputBitmap.height),
-                Rect(left, top, right, bottom), null
+            outputBitmap, Rect(0, 0, outputBitmap.width, outputBitmap.height),
+            Rect(left, top, right, bottom), null
             )
             surfaceView.holder.unlockCanvasAndPost(canvas)
         }
