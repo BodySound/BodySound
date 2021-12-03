@@ -32,7 +32,6 @@ import android.os.Process
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -46,7 +45,6 @@ import org.tensorflow.lite.examples.poseestimation.camera.CameraSource
 import org.tensorflow.lite.examples.poseestimation.data.Device
 import org.tensorflow.lite.examples.poseestimation.ml.ModelType
 import org.tensorflow.lite.examples.poseestimation.ml.MoveNet
-import org.tensorflow.lite.examples.poseestimation.sound.MakeSound
 import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import org.tensorflow.lite.examples.poseestimation.sound.AudioCaptureService
@@ -206,7 +204,6 @@ class MainActivity : AppCompatActivity() {
         // play event
         val playEvent = findViewById<ImageButton>(R.id.play_image_button)
         playEvent.setImageResource(R.drawable.play_button)
-
         var playState = false
 
         playEvent.setOnClickListener {
@@ -226,7 +223,7 @@ class MainActivity : AppCompatActivity() {
                     playEvent.setImageResource(R.drawable.play_stop_button)
                     playState = true
                     audioCapturesDirectory.mkdirs()
-                    player.prepare(audioCapturesDirectory.absolutePath + "/Capture-BodySound.pcm")
+                    player.prepare(audioCapturesDirectory.absolutePath + "/Capture-BodySound.pcm",playEvent)
                     player.play()
                 }
                 // 끝나면 버튼이 다시 돌아옴
@@ -236,13 +233,13 @@ class MainActivity : AppCompatActivity() {
                 playEvent.setImageResource(R.drawable.play_button)
                 playState = false
                 player.stop()
-
                 // stop playing
             }
         }
         // set octave bar
         setOctaveBar()
     }
+
 
     private fun setOctaveBar() {
         val octaveBar : SeekBar = findViewById(R.id.octaveBar)
