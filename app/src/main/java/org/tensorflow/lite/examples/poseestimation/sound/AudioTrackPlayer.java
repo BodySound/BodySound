@@ -5,15 +5,20 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.widget.ImageButton;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import org.tensorflow.lite.examples.poseestimation.R;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class AudioTrackPlayer {
+public class AudioTrackPlayer extends AppCompatActivity{
     private String pathAudio;
     private AudioTrack audioPlayer;
     private Thread mThread;
@@ -25,13 +30,14 @@ public class AudioTrackPlayer {
     private boolean isPlay = true;
     private boolean isLooping = false;
     private static Handler mHandler;
-
+    public ImageButton PlayButton;
     public AudioTrackPlayer() {
 
     }
 
-    public void prepare(String pathAudio) {
+    public void prepare(String pathAudio, ImageButton playEvent) {
         this.pathAudio = pathAudio;
+        this.PlayButton = playEvent;
         mHandler = new Handler(Looper.getMainLooper());
     }
 
@@ -85,7 +91,6 @@ public class AudioTrackPlayer {
     }
 
     private class PlayerProcess implements Runnable {
-
         @Override
         public void run() {
             while (bytesread < size && isPlay) {
@@ -114,10 +119,21 @@ public class AudioTrackPlayer {
                     mThread = null;
                 }
             }
+            Message msg = handler.obtainMessage();
+
+            handler.sendMessage(msg);
             if (isLooping && isPlay) mHandler.postDelayed(mLopingRunnable, 100);
         }
     }
 
+    final Handler handler = new Handler(){
+        public void handleMessage(Message msg)
+        {
+            PlayButton.setImageResource(R.drawable.play_button);
+            Log.d("stamp","end of file");
+            stop();
+        }
+    };
     public void setLooping() {
         isLooping = !isLooping;
     }
