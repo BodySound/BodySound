@@ -428,6 +428,8 @@ class MakeSound() {
             2.0
         ) + Math.pow((right_wrist.y - Right_Wrist.y).toDouble(), 2.0)
 
+        Log.d("test", Right_Wrist.x.toString())
+
 
         if (right_wrist.x > 400) {
             setNoteFrequencies(ratio.toDouble())
