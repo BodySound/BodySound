@@ -88,3 +88,8 @@ AudioFormat
  
 ### 6. 회의록
  -> [**Documents**](https://github.com/BodySound/BodySound/tree/master/%ED%9A%8C%EC%9D%98%EB%A1%9D)
+
+### 7. 결과물
+![결과물](https://user-images.githubusercontent.com/29995264/153120449-4026b5c9-532a-4b13-82a3-2dde028ae957.png)
+
+
